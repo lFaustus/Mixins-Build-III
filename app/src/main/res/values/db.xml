@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="db_version">1</integer>
+    <string name="db_table">Liquorlist</string>
+    <string-array name="db_columns">
+        <item>id_</item>
+        <item>JSONLiquor</item>
+    </string-array>
+</resources>

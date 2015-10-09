@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">TheBar</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="liquor_label_default_value">Add Liquor</string>
+    <string name="shared_preference_name">TheBarPreferences</string>
+</resources>
