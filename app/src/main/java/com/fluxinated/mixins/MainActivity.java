@@ -11,6 +11,7 @@ import com.fluxinated.mixins.adapters.StaggeredRecyclerAdapter;
 import com.fluxinated.mixins.database.DB;
 import com.fluxinated.mixins.enums.Bottle;
 import com.fluxinated.mixins.enums.FragmentTags;
+import com.fluxinated.mixins.fragments.AdjustLiquorVolume;
 import com.fluxinated.mixins.fragments.LiquorList;
 import com.fluxinated.mixins.fragments.MixLiquor;
 import com.fluxinated.mixins.loader.ImageLoaderEX;
@@ -147,6 +148,12 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
             {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.root_view, MixLiquor.getInstance(FragmentTags.MixLiquor.getTAG()))
+                        .addToBackStack(null).commit();
+            }
+            else if(fragment == FragmentTags.ADJUSTLIQUOR)
+            {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.root_view, AdjustLiquorVolume.getInstance(FragmentTags.ADJUSTLIQUOR.getTAG(),extra[0]))
                         .addToBackStack(null).commit();
             }
     }

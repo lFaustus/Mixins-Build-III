@@ -1,5 +1,6 @@
 package com.fluxinated.mixins.viewholders;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.v7.widget.CardView;
@@ -15,7 +16,10 @@ import android.widget.TextView;
 import com.fluxinated.mixins.MainActivity;
 import com.fluxinated.mixins.R;
 import com.fluxinated.mixins.adapters.StaggeredRecyclerAdapter;
-import com.fluxinated.mixins.database.MyApplication;
+import com.fluxinated.mixins.enums.FragmentTags;
+import com.fluxinated.mixins.model.CardInformation;
+
+import org.json.JSONException;
 
 /**
  * Created by User on 09/10/2015.
@@ -29,6 +33,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     public FrameLayout Tile_label;
     private StaggeredRecyclerAdapter mStaggeredRecyclerAdapter;
     protected AlertDialog.Builder mDialog = null;
+    private Activity mActivity;
 
     public BaseViewHolder(View itemView,StaggeredRecyclerAdapter staggeredRecyclerAdapter)
     {
@@ -39,6 +44,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         Tile_label = (FrameLayout) itemView.findViewById(R.id.tile_label);
         txtviewModeIndicator = (TextView) itemView.findViewById(R.id.edit_mode_tag);
         mStaggeredRecyclerAdapter = staggeredRecyclerAdapter;
+        mActivity = (MainActivity)mStaggeredRecyclerAdapter.getCallback();
 
         Tile.setOnClickListener(this);
 
@@ -50,7 +56,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         switch (v.getId())
         {
             case R.id.card_view:
-                View view = LayoutInflater.from(MyApplication.getAppContext()).inflate(R.layout.liquor_information_dialog_big,null);
+                View view = LayoutInflater.from(mActivity).inflate(R.layout.liquor_information_dialog_big, null);
                 TextView mTextView_name = (TextView)view.findViewById(R.id.liquor_name),
                 mTextView_description = (TextView)view.findViewById(R.id.liquor_description);
                 ImageView mImageView_picture = (ImageView)view.findViewById(R.id.info_picture);
@@ -63,11 +69,27 @@ public class BaseViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     {
         if(mDialog == null)
         {
-            mDialog = new AlertDialog.Builder(((MainActivity)mStaggeredRecyclerAdapter.getCallback()).getWindow().getContext());
+            mDialog = new AlertDialog.Builder(mActivity.getWindow().getContext());
             AlertDialog al = mDialog.create();
             //al.setView(LayoutInflater.from(getActivity()).inflate(R.layout.liquor_information_dialog_big,null));
             al.setView(layout);
             al.setCancelable(true);
+
+            /*
+             *Setting up values
+             */
+            CardInformation mCardInformation = (CardInformation)triggeredView.getTag();
+            //Log.e("Array",mCardInformation.getLiquor().getLiquorOrder().toString());
+            try
+            {
+                ((TextView) extra[0]).setText(mCardInformation.getLiquor().getLiquorName());
+                ((TextView) extra[1]).setText(mCardInformation.getLiquor().getLiquorDescription());
+                ((MainActivity)mActivity).getImageLoader().DisplayImage(mCardInformation.getLiquor().getLiquorPictureURI(),mCardInformation.getLiquor().getLiquorName(),(ImageView) extra[2]);
+            } catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+
 
             if(message != null)
                 al.setMessage(message);
@@ -83,12 +105,13 @@ public class BaseViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 }
             });
 
-            al.setButton(DialogInterface.BUTTON_NEGATIVE, button1_label, new DialogInterface.OnClickListener()
+            al.setButton(DialogInterface.BUTTON_NEUTRAL, button1_label, new DialogInterface.OnClickListener()
             {
                 @Override
                 public void onClick(DialogInterface dialog, int which)
                 {
                     mDialog = null;
+                    ((MainActivity)mActivity).OnFragmentChange(FragmentTags.ADJUSTLIQUOR,mCardInformation);
                     dialog.dismiss();
                 }
             });
@@ -104,7 +127,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder implements View.OnCl
             al.show();
             WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
             lp.copyFrom(al.getWindow().getAttributes());
-            lp.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 400, ((MainActivity)mStaggeredRecyclerAdapter.getCallback()).getResources().getDisplayMetrics());
+            lp.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 400, mActivity.getResources().getDisplayMetrics());
             al.getWindow().setAttributes(lp);
 
         }
