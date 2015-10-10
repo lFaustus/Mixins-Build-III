@@ -80,7 +80,7 @@ public class LiquorList extends BaseLiquorFragment implements EndlessStaggeredRe
                 mCardInformation = new ArrayList<>();
                 //getArguments().putParcelableArrayList(CARDINFORMATION_TAG,mCardInformation);
             }
-        Log.e("cardinformaton size",mCardInformation.size()+"");
+            //Log.e("cardinformaton size",mCardInformation.size()+"");
             mGenerateTiles = new GenerateTiles((MainActivity)getActivity(),mCardInformation);
             mGenerateTiles.setMaterialPalette(getActivity().getResources().getStringArray(R.array.material_palette));
             mGenerateTiles.fetch();

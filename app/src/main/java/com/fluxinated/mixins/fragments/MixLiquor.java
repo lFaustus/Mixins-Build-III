@@ -60,7 +60,6 @@ public class MixLiquor extends BaseLiquorFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        Log.e("oncreate", "oncreate");
         View view = inflater.inflate(R.layout.mix_drinks_ui,container,false);
         imgView = (CircleImageView)view.findViewById(R.id.liquor_image);
         mTextView = (TextView)view.findViewById(R.id.liquor_name);
@@ -77,7 +76,6 @@ public class MixLiquor extends BaseLiquorFragment
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.i("ImageLocation2", "asdasdas");
         if(requestCode == 1)
         {
 

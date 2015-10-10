@@ -18,6 +18,7 @@ import com.fluxinated.mixins.model.CardInformation;
 import com.fluxinated.mixins.model.Liquor;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 
 /**
  * Created by User on 09/10/2015.
@@ -60,15 +61,37 @@ public class AdjustLiquorVolume extends MixLiquor
     @Override
     public void onActivityCreated(Bundle savedInstanceState)
     {
+        if(mArray == null )
+            mArray =  mLiquor.getLiquorOrder();
+
+        for(int i=0; i< mArray.length() ;i++)
+        {
+            if(i%2 ==0)
+
+            for(Bottle b:Bottle.values())
+            {
+                try
+                {
+                    if(b.getBottleValue() == Integer.parseInt(mArray.get(i).toString()))
+                    {
+                        super.mOrder.put(b.name(), mArray.getString(i));
+                        super.mOrder.put(b.name()+ BOTTLE_VOLUME, mArray.getString(i+1));
+                    }
+                } catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
+
         super.onActivityCreated(savedInstanceState);
     }
 
     @Override
     protected void initializeViews(ViewGroup vg)
     {
-        if(mArray == null )
-            mArray =  mLiquor.getLiquorOrder();
-
         try {
             for (int i = 0; i < vg.getChildCount(); i++) {
 
@@ -94,14 +117,11 @@ public class AdjustLiquorVolume extends MixLiquor
                         {
                             if(m % 2 == 0)
                             {
-                                if(Integer.parseInt(mArray.get(m).toString()) == mBottle[mCounter].getBottleValue())
+                                if(Integer.parseInt(mArray.getString(m)) == mBottle[mCounter].getBottleValue())
                                 {
-                                    ((CircularSeekBar) vg.getChildAt(i)).setProgress(Integer.parseInt(mArray.get(m + 1).toString()));
-                                    super.mOrder.put(((Bottle)vg.getChildAt(i).getTag()).name() + BOTTLE_VOLUME,mArray.get(m + 1).toString());
+                                    ((CircularSeekBar) vg.getChildAt(i)).setProgress(Integer.parseInt(mArray.getString(m + 1)));
                                 }
                             }
-                            else
-                                super.mOrder.put(((Bottle) vg.getChildAt(i).getTag()).name() , String.valueOf(((Bottle) vg.getChildAt(i).getTag()).getBottleValue()));
                         }
                         ((CircularSeekBar) vg.getChildAt(i)).setOnSeekBarChangeListener(new SeekBarListener());
 
@@ -114,7 +134,7 @@ public class AdjustLiquorVolume extends MixLiquor
                             {
                                 if(m % 2 == 0)
                                 {
-                                    if(Integer.parseInt(mArray.get(m).toString()) == mBottle[mCounter].getBottleValue())
+                                    if(Integer.parseInt(mArray.getString(m)) == mBottle[mCounter].getBottleValue())
                                     {
                                         ((TextView) vg.getChildAt(i)).setText(mArray.get(m+1).toString() + "ml");
                                     }
@@ -163,6 +183,7 @@ public class AdjustLiquorVolume extends MixLiquor
                 startActivityForResult(imgChooser, 1);
                 break;
         }*/
-        super.onClick(v);
+        Log.e("array",new JSONArray(super.mOrder.values()).toString()+"");
+        //super.onClick(v);
     }
 }
