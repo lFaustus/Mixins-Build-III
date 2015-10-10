@@ -99,9 +99,9 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
         return mBottles;
     }
 
-    public void CreateLiquor(Object obj)
+    public boolean CreateLiquor(Object obj)
     {
-        mDB.insert(obj);
+        return mDB.insert(obj);
     }
 
     public void DeleteLiquor(Object obj)
@@ -124,9 +124,9 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
         return mImageLoaderEX;
     }
 
-    public void UpdateLiquor(Object... obj)
+    public boolean UpdateLiquor(Object... obj)
     {
-        mDB.update(obj);
+        return mDB.update(obj);
     }
 
     @Override

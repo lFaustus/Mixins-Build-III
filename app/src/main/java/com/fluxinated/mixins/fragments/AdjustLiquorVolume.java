@@ -15,7 +15,6 @@ import com.fluxinated.mixins.customviews.CircularSeekBar;
 import com.fluxinated.mixins.customviews.PlayFontTextView;
 import com.fluxinated.mixins.enums.Bottle;
 import com.fluxinated.mixins.model.CardInformation;
-import com.fluxinated.mixins.model.Liquor;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,7 +29,6 @@ import java.util.Map;
 public class AdjustLiquorVolume extends MixLiquor
 {
     private CardInformation mCardInformation;
-    protected Liquor mLiquor;
     private JSONArray mArray;
     protected Map<Bottle,String> mTempBottleSettings;
 
@@ -57,7 +55,7 @@ public class AdjustLiquorVolume extends MixLiquor
 
             if (mCardInformation != null)
             {
-                mLiquor = mCardInformation.getLiquor();
+                super.mLiquor = mCardInformation.getLiquor();
                 Log.e("Array",mCardInformation.getLiquor().getLiquorOrder().toString());
             }
         }
@@ -68,7 +66,7 @@ public class AdjustLiquorVolume extends MixLiquor
     {
         mTempBottleSettings = Collections.synchronizedMap(new LinkedHashMap<Bottle, String>());
         if(mArray == null )
-            mArray =  mLiquor.getLiquorOrder();
+            mArray =  super.mLiquor.getLiquorOrder();
 
         for(int i=0; i< mArray.length() ;i++)
         {
@@ -95,9 +93,10 @@ public class AdjustLiquorVolume extends MixLiquor
         try
         {
 
-            super.mLiquorName = mLiquor.getLiquorName();
-            super.mLiquorDescription = mLiquor.getLiquorDescription();
-            super.mImageLocation = mLiquor.getLiquorPictureURI();
+            super.mLiquorID = super.mLiquor.getLiquorId();
+            super.mLiquorName = super.mLiquor.getLiquorName();
+            super.mLiquorDescription = super.mLiquor.getLiquorDescription();
+            super.mImageLocation = super.mLiquor.getLiquorPictureURI();
 
         } catch (JSONException e)
         {
@@ -127,7 +126,7 @@ public class AdjustLiquorVolume extends MixLiquor
                         else if(vg.getChildAt(i) instanceof ImageView)
                         {
                             if(super.mImageLocation != null)
-                            ((MainActivity) getActivity()).getImageLoader().DisplayImage(mLiquor.getLiquorPictureURI(), mLiquor.getLiquorName(), (ImageView) vg.getChildAt(i));
+                            ((MainActivity) getActivity()).getImageLoader().DisplayImage(super.mLiquor.getLiquorPictureURI(), super.mLiquor.getLiquorName(), (ImageView) vg.getChildAt(i));
                         }
                     }
 

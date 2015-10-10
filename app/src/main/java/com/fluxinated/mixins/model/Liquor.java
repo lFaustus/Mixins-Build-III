@@ -73,6 +73,11 @@ public class Liquor implements Parcelable
         Liquor_Id = liquor_Id;
     }
 
+    public void setJSONLiquor(JSONObject JSONLiquor)
+    {
+        this.JSONLiquor = JSONLiquor;
+    }
+
     public String getDateAdded() throws JSONException
     {
         return this.JSONLiquor.getString(JSONDB_LIQUOR_DATE_ADDED);

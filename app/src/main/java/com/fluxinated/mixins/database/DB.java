@@ -31,8 +31,9 @@ public class DB
         mDbHelper = DBhelper.getInstance();
     }
 
-    public void insert(Object... params)
+    public boolean insert(Object... params)
     {
+        boolean isSuccess = false;
         SQLiteDatabase db = mDbHelper.openToWriteDB();
         ContentValues mContentValues = new ContentValues();
         try{
@@ -46,11 +47,11 @@ public class DB
                 }
             }
            // db.setTransactionSuccessful();
-            Toast.makeText(MyApplication.getAppContext(),"mixture successfully added", Toast.LENGTH_SHORT).show();
+            isSuccess = true;
         }
         catch(Exception exp)
         {
-            Toast.makeText(MyApplication.getAppContext(),"Failed to create liquor", Toast.LENGTH_SHORT).show();
+
             exp.printStackTrace();
         }
         finally
@@ -58,7 +59,7 @@ public class DB
             mDbHelper.closeDB();
         }
 
-
+        return isSuccess;
     }
 
     public void  delete(Object... params)
@@ -111,8 +112,9 @@ public class DB
         mDbHelper.closeDB();
     }
 
-    public void update(Object... params)
+    public boolean update(Object... params)
     {
+        boolean isSuccess = false;
         SQLiteDatabase db = mDbHelper.openToWriteDB();
         ContentValues mContentValues = new ContentValues();
         try
@@ -130,11 +132,18 @@ public class DB
                     Log.e("object string",obj.toString());
                 }
             }
+            isSuccess = true;
+            //Toast.makeText(MyApplication.getAppContext(),"updated successfully", Toast.LENGTH_SHORT).show();
         }
         catch(Exception e)
         {
+
             e.printStackTrace();
         }
+        finally {
+            mDbHelper.closeDB();
+        }
+        return isSuccess;
     }
 
 
