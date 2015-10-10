@@ -124,6 +124,17 @@ public class Liquor implements Parcelable
         return null;
     }
 
+    public String getBottle(String bottlename)
+    {
+        try
+        {
+            return this.JSONLiquor.getString(bottlename);
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 
     @Override

@@ -20,14 +20,19 @@ import com.fluxinated.mixins.model.Liquor;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * Created by User on 09/10/2015.
  */
 public class AdjustLiquorVolume extends MixLiquor
 {
     private CardInformation mCardInformation;
-    private Liquor mLiquor;
+    protected Liquor mLiquor;
     private JSONArray mArray;
+    protected Map<Bottle,String> mTempBottleSettings;
 
     public AdjustLiquorVolume(){}
 
@@ -61,6 +66,7 @@ public class AdjustLiquorVolume extends MixLiquor
     @Override
     public void onActivityCreated(Bundle savedInstanceState)
     {
+        mTempBottleSettings = Collections.synchronizedMap(new LinkedHashMap<Bottle, String>());
         if(mArray == null )
             mArray =  mLiquor.getLiquorOrder();
 
@@ -76,6 +82,7 @@ public class AdjustLiquorVolume extends MixLiquor
                     {
                         super.mOrder.put(b.name(), mArray.getString(i));
                         super.mOrder.put(b.name()+ BOTTLE_VOLUME, mArray.getString(i+1));
+                        this.mTempBottleSettings.put(b,mCardInformation.getLiquor().getBottle(b.name()));
                     }
                 } catch (JSONException e)
                 {
@@ -83,15 +90,27 @@ public class AdjustLiquorVolume extends MixLiquor
                 }
             }
         }
+        super.mJSONArrayLiquorOrder = new JSONArray(super.mOrder.values());
 
+        try
+        {
 
+            super.mLiquorName = mLiquor.getLiquorName();
+            super.mLiquorDescription = mLiquor.getLiquorDescription();
+            super.mImageLocation = mLiquor.getLiquorPictureURI();
 
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
         super.onActivityCreated(savedInstanceState);
+
     }
 
     @Override
     protected void initializeViews(ViewGroup vg)
     {
+        mCurrentBottleSettings = mTempBottleSettings;
         try {
             for (int i = 0; i < vg.getChildCount(); i++) {
 
@@ -104,9 +123,12 @@ public class AdjustLiquorVolume extends MixLiquor
                     {
                         vg.getChildAt(i).setOnClickListener(this);
                         if(vg.getChildAt(i).getId() == R.id.add_button_drinks)
-                            ((Button) vg.getChildAt(i)).setText("Save");
+                            ((Button) vg.getChildAt(i)).setText("Update");
                         else if(vg.getChildAt(i) instanceof ImageView)
-                            ((MainActivity)getActivity()).getImageLoader().DisplayImage(mLiquor.getLiquorPictureURI(),mLiquor.getLiquorName(),(ImageView)vg.getChildAt(i));
+                        {
+                            if(super.mImageLocation != null)
+                            ((MainActivity) getActivity()).getImageLoader().DisplayImage(mLiquor.getLiquorPictureURI(), mLiquor.getLiquorName(), (ImageView) vg.getChildAt(i));
+                        }
                     }
 
                     else  if (vg.getChildAt(i) instanceof CircularSeekBar) {
@@ -149,11 +171,22 @@ public class AdjustLiquorVolume extends MixLiquor
                             {
                                 vg.getChildAt(i).setOnClickListener(this);
                                 vg.getChildAt(i).setTag(mBottle[mCounter]);
-                                ((TextView) vg.getChildAt(i)).setText(mCurrentBottleSettings.get(mBottle[mCounter]));
+                                //((TextView) vg.getChildAt(i)).setText(mCurrentBottleSettings.get(mBottle[mCounter]));
+                                String mTempString = mCurrentBottleSettings.get(mBottle[mCounter]) == null ?
+                                          getResources().getString(R.string.liquor_label_default_value) : mCurrentBottleSettings.get(mBottle[mCounter]);
+                                if(mTempString == getResources().getString(R.string.liquor_label_default_value))
+                                    ((TextView) vg.getChildAt(i)).setTextColor(getResources().getColor(R.color.fab_material_red_500));
+                                ((TextView) vg.getChildAt(i)).setText(mTempString);
+
+                               /* if(mTempBottleSettings.get(mBottle[mCounter]) == null)
+                                    ((TextView) vg.getChildAt(i)).setText(getActivity().getResources().getString(R.string.liquor_label_default_value));
+                                else
+                                    ((TextView) vg.getChildAt(i)).setText(mTempBottleSettings.get(mBottle[mCounter]));*/
+
                                 mCounter++;
                             }
                             else
-                                ((PlayFontTextView) vg.getChildAt(i)).setText(mLiquor.getLiquorName());
+                                ((PlayFontTextView) vg.getChildAt(i)).setText(super.mLiquorName);
 
                         }
 
@@ -176,14 +209,17 @@ public class AdjustLiquorVolume extends MixLiquor
     @Override
     public void onClick(View v)
     {
-        /*switch (v.getId())
+       /* switch (v.getId())
         {
             case R.id.liquor_image:
                 Intent imgChooser = new Intent(getActivity(), FileChooser.class);
                 startActivityForResult(imgChooser, 1);
                 break;
+
+            default:
+                break;
         }*/
-        Log.e("array",new JSONArray(super.mOrder.values()).toString()+"");
-        //super.onClick(v);
+       // Log.e("array",new JSONArray(super.mOrder.values()).toString()+"");
+        super.onClick(v);
     }
 }

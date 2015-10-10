@@ -40,9 +40,10 @@ import java.util.Map;
 public class MixLiquor extends BaseLiquorFragment
 {
     protected JSONArray mJSONArrayLiquorOrder;
+
     protected int mCounter = 0;
     protected AlertDialog.Builder mDialog = null;
-    protected String mImageLocation;
+    protected String mImageLocation,mLiquorName,mLiquorDescription;
     protected CircleImageView imgView;
     protected TextView mTextView;
 
@@ -210,6 +211,15 @@ public class MixLiquor extends BaseLiquorFragment
                 al.setMessage(message);
 
 
+            if (MixLiquor.this.getClass().equals(AdjustLiquorVolume.class))
+            {
+                ((EditText) extra[0]).setText(mLiquorName);
+                 extra[0].setEnabled(false);
+                ((EditText) extra[1]).setText(mLiquorDescription);
+                ((EditText) extra[1]).requestFocus();
+            }
+
+            //setting up buttons
             al.setOnCancelListener(new DialogInterface.OnCancelListener()
             {
                 @Override
@@ -244,7 +254,11 @@ public class MixLiquor extends BaseLiquorFragment
                             try
                             {
 
+                                //sets the pictureURL into JSONObject
+                                if(mImageLocation != null)
                                 mJSONObjectLiquor.put(Liquor.JSONDB_LIQUOR_PIC_URL, mImageLocation);
+
+                                //sets the Bottle with corresponding Bottle label and Bottle volume into JSONObject
                                 for (Map.Entry<String, String> map : mOrder.entrySet())
                                 {
 
@@ -253,16 +267,40 @@ public class MixLiquor extends BaseLiquorFragment
                                     else
                                         mJSONObjectLiquor.put(map.getKey(), map.getValue());
                                 }
+                                //sets the liquor order array into JSONObject
                                 mJSONObjectLiquor.put("Order", mJSONArrayLiquorOrder);
+
+                                //sets the date added into JSONObject
                                 String mDate = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(new Date());
                                 mJSONObjectLiquor.put(Liquor.JSONDB_LIQUOR_DATE_ADDED, mDate);
 
                                 if (triggeredView.getId() != R.id.mix_button_drinks)
                                 {
-                                    mJSONObjectLiquor.put(Liquor.JSONDB_LIQUOR_NAME, ((EditText) extra[0]).getText());
-                                    mJSONObjectLiquor.put(Liquor.JSONDB_LIQUOR_DESCRIPTION, ((EditText) extra[1]).getText());
-                                    MixLiquor.this.mTextView.setText(((EditText) extra[0]).getText());
-                                    ((MainActivity)getActivity()).CreateLiquor(mJSONObjectLiquor);
+
+                                    if (!MixLiquor.this.getClass().equals(AdjustLiquorVolume.class))
+                                    {
+                                        mLiquorName = ((EditText) extra[0]).getText().toString();
+                                        mLiquorDescription = ((EditText) extra[1]).getText().toString();
+
+                                        //sets the liquor name into JSONObject
+                                        mJSONObjectLiquor.put(Liquor.JSONDB_LIQUOR_NAME, mLiquorName);
+
+                                        //sets the liquor description into JSONObject
+                                        mJSONObjectLiquor.put(Liquor.JSONDB_LIQUOR_DESCRIPTION, mLiquorDescription);
+                                        MixLiquor.this.mTextView.setText(mLiquorName);
+                                        ((MainActivity) getActivity()).CreateLiquor(mJSONObjectLiquor);
+                                    }
+
+                                    else
+                                    {
+                                        Log.e("mLiquorName",mLiquorName);
+                                        //sets the liquor name into JSONObject
+                                        mJSONObjectLiquor.put(Liquor.JSONDB_LIQUOR_NAME, mLiquorName);
+
+                                        //sets the liquor description into JSONObject
+                                        mJSONObjectLiquor.put(Liquor.JSONDB_LIQUOR_DESCRIPTION, mLiquorDescription);
+                                    }
+
                                 }
                                 //if(mParam.equals(FragmentTags.MixLiquor.getTAG()))
                                 //((MainActivity)getActivity()).CreateLiquor(mJSONObjectLiquor);
@@ -283,14 +321,23 @@ public class MixLiquor extends BaseLiquorFragment
 
 
                         default:
-                            TextView mTextView = (TextView)triggeredView;
-                            EditText mEditText = (EditText)extra[0];
+                            TextView mTextView = (TextView) triggeredView;
+                            EditText mEditText = (EditText) extra[0];
                             mTextView.setText(mEditText.getText());
-                            SharedPreferences.Editor editor = ((MainActivity)getActivity()).getSharedPreferences().edit();
-                            Bottle b = (Bottle)mTextView.getTag();
-                            editor.putString(b.name(), mTextView.getText().toString());
-                            editor.commit();
-                            mCurrentBottleSettings.put(b, mTextView.getText().toString());
+                            if (!MixLiquor.this.getClass().equals(AdjustLiquorVolume.class))
+                            {
+                                SharedPreferences.Editor editor = ((MainActivity) getActivity()).getSharedPreferences().edit();
+                                Bottle b = (Bottle) mTextView.getTag();
+                                editor.putString(b.name(), mTextView.getText().toString());
+                                editor.commit();
+                                mCurrentBottleSettings.put(b, mTextView.getText().toString());
+                            } else
+                            {
+                                Bottle b = (Bottle) mTextView.getTag();
+                                mTextView.setTextColor(getResources().getColor(R.color.material_gray));
+                                mCurrentBottleSettings.put(b, mTextView.getText().toString());
+                            }
+
                             break;
                     }
 
