@@ -19,6 +19,7 @@ import com.fluxinated.mixins.model.CardInformation;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -168,15 +169,18 @@ public class AdjustLiquorVolume extends MixLiquor
                         {
                             if(vg.getChildAt(i).getId() != R.id.liquor_name)
                             {
+                                //mCurrentBottle is the bottle setting of the selected mixture
+                                //not the universal bottle setting
                                 vg.getChildAt(i).setOnClickListener(this);
+                                ((TextView)vg.getChildAt(i)).setSelected(true);
                                 vg.getChildAt(i).setTag(mBottle[mCounter]);
                                 //((TextView) vg.getChildAt(i)).setText(mCurrentBottleSettings.get(mBottle[mCounter]));
                                 String mTempString = mCurrentBottleSettings.get(mBottle[mCounter]) == null ?
                                           getResources().getString(R.string.liquor_label_default_value) : mCurrentBottleSettings.get(mBottle[mCounter]);
-                                if(mTempString == getResources().getString(R.string.liquor_label_default_value))
-                                    ((TextView) vg.getChildAt(i)).setTextColor(getResources().getColor(R.color.fab_material_red_500));
+                                //if(mTempString == getResources().getString(R.string.liquor_label_default_value))
+                                   // ((TextView) vg.getChildAt(i)).setTextColor(getResources().getColor(R.color.fab_material_red_500));
                                 ((TextView) vg.getChildAt(i)).setText(mTempString);
-
+                                filter(((MainActivity) getActivity()).getCurrentBottleSettings().values(), ((TextView) vg.getChildAt(i)));
                                /* if(mTempBottleSettings.get(mBottle[mCounter]) == null)
                                     ((TextView) vg.getChildAt(i)).setText(getActivity().getResources().getString(R.string.liquor_label_default_value));
                                 else
@@ -202,6 +206,24 @@ public class AdjustLiquorVolume extends MixLiquor
             Log.e("Null", "ViewGroup is Null");
         } catch (Exception exp) {
             exp.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void filter(Collection<String> list, Object... obj) {
+        for(String s:list)
+        {
+            Log.e("string", s);
+
+            if(!s.equalsIgnoreCase(((TextView)obj[0]).getText().toString()))
+            {
+                ((TextView)obj[0]).setTextColor(getResources().getColor(R.color.fab_material_red_500));
+                continue;
+            } else {
+                ((TextView)obj[0]).setTextColor(getResources().getColor(R.color.material_gray));
+                // triggeredView.setEnabled(true);
+                break;
+            }
         }
     }
 

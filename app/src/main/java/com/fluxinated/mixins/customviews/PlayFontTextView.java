@@ -35,6 +35,8 @@ public class PlayFontTextView extends TextView {
         init(context);
     }
 
+
+
     void init(Context context)
     {
         mTypeface = Typeface.createFromAsset(context.getAssets(),"Play-Regular.ttf");

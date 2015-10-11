@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import com.fluxinated.mixins.R;
 import com.fluxinated.mixins.adapters.StaggeredRecyclerAdapter;
 import com.fluxinated.mixins.enums.FragmentTags;
 import com.fluxinated.mixins.model.CardInformation;
+import com.fluxinated.mixins.model.Liquor;
 
 import org.json.JSONException;
 
@@ -121,6 +123,9 @@ public class BaseViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 public void onClick(DialogInterface dialog, int which)
                 {
                     mDialog = null;
+                    CardInformation mCardInformation = (CardInformation)triggeredView.getTag();
+                    Liquor mLiquor = mCardInformation.getLiquor();
+                    Log.e("Pour",mLiquor.getLiquorOrder().toString());
                     dialog.dismiss();
                 }
             });

@@ -30,6 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
@@ -47,6 +48,7 @@ public class MixLiquor extends BaseLiquorFragment
     protected int mLiquorID;
     protected CircleImageView imgView;
     protected TextView mTextView;
+    protected boolean isAvailable = false;
 
     public MixLiquor(){}
 
@@ -127,8 +129,12 @@ public class MixLiquor extends BaseLiquorFragment
                             if(vg.getChildAt(i).getId() != R.id.liquor_name)
                             {
                                 vg.getChildAt(i).setOnClickListener(this);
+                                ((TextView)vg.getChildAt(i)).setSelected(true);
                                 vg.getChildAt(i).setTag(mBottle[mCounter]);
                                 ((TextView) vg.getChildAt(i)).setText(mCurrentBottleSettings.get(mBottle[mCounter]));
+                                if(((TextView) vg.getChildAt(i)).getText().equals(getResources().getString(R.string.liquor_label_default_value)))
+                                    ((TextView) vg.getChildAt(i)).setTextColor(getResources().getColor(R.color.fab_material_red_500));
+
                                 mCounter++;
                             }
                         }
@@ -178,6 +184,7 @@ public class MixLiquor extends BaseLiquorFragment
 
             case R.id.mix_button_drinks:
                 //Toast.makeText(getActivity(), "Mix", Toast.LENGTH_SHORT).show();
+                //v.setEnabled(false);
                 openDialog(v, null, "Cancel","Pour","Pour?");
                 break;
 
@@ -323,6 +330,7 @@ public class MixLiquor extends BaseLiquorFragment
                             EditText mEditText = (EditText) extra[0];
                             mTextView.setText(mEditText.getText());
                             if (!MixLiquor.this.getClass().equals(AdjustLiquorVolume.class)) {
+                                mTextView.setTextColor(getResources().getColor(R.color.material_gray));
                                 SharedPreferences.Editor editor = ((MainActivity) getActivity()).getSharedPreferences().edit();
                                 Bottle b = (Bottle) mTextView.getTag();
                                 editor.putString(b.name(), mTextView.getText().toString());
@@ -330,7 +338,23 @@ public class MixLiquor extends BaseLiquorFragment
                                 mCurrentBottleSettings.put(b, mTextView.getText().toString());
                             } else {
                                 Bottle b = (Bottle) mTextView.getTag();
-                                mTextView.setTextColor(getResources().getColor(R.color.material_gray));
+                                mTextView.setTextColor(getResources().getColor(R.color.fab_material_red_500));
+                                //triggeredView.setEnabled(false);
+                                filter(((MainActivity) getActivity()).getCurrentBottleSettings().values(),mTextView);
+                               /* for (String s : ((MainActivity) getActivity()).getCurrentBottleSettings().values()) {
+
+                                    if (!s.equalsIgnoreCase(mTextView.getText().toString())) {
+                                        continue;
+                                        // break;
+                                    } else {
+                                        mTextView.setTextColor(getResources().getColor(R.color.material_gray));
+                                       // triggeredView.setEnabled(true);
+                                        break;
+                                    }
+
+
+                                }*/
+
                                 mCurrentBottleSettings.put(b, mTextView.getText().toString());
                             }
 
@@ -347,6 +371,24 @@ public class MixLiquor extends BaseLiquorFragment
             lp.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300, getActivity().getResources().getDisplayMetrics());
             al.getWindow().setAttributes(lp);*/
 
+        }
+    }
+
+    protected void filter(Collection<String> list,Object... obj)
+    {
+        for(String s:list)
+        {
+            Log.e("string", s);
+
+            if(!s.equalsIgnoreCase(((TextView)obj[0]).getText().toString()))
+            {
+                //((TextView)obj[0]).setTextColor(getResources().getColor(R.color.fab_material_red_500));
+                continue;
+            } else {
+                ((TextView)obj[0]).setTextColor(getResources().getColor(R.color.material_gray));
+                // triggeredView.setEnabled(true);
+                break;
+            }
         }
     }
 
