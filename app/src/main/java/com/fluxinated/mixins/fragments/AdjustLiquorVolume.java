@@ -15,12 +15,14 @@ import com.fluxinated.mixins.customviews.CircularSeekBar;
 import com.fluxinated.mixins.customviews.PlayFontTextView;
 import com.fluxinated.mixins.enums.Bottle;
 import com.fluxinated.mixins.model.CardInformation;
+import com.fluxinated.mixins.model.LiquorTag;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -30,7 +32,7 @@ import java.util.Map;
 public class AdjustLiquorVolume extends MixLiquor
 {
     private CardInformation mCardInformation;
-    private JSONArray mArray;
+    private JSONArray mLiquorOrderArray;
     protected Map<Bottle,String> mTempBottleSettings;
 
     public AdjustLiquorVolume(){}
@@ -65,11 +67,12 @@ public class AdjustLiquorVolume extends MixLiquor
     @Override
     public void onActivityCreated(Bundle savedInstanceState)
     {
-        mTempBottleSettings = Collections.synchronizedMap(new LinkedHashMap<Bottle, String>());
-        if(mArray == null )
-            mArray =  super.mLiquor.getLiquorOrder();
+        this.mTempBottleSettings = Collections.synchronizedMap(new LinkedHashMap<Bottle, String>());
+        super.mCircularSeekBar = Collections.synchronizedMap(new HashMap<>());
+        if(this.mLiquorOrderArray == null )
+            this.mLiquorOrderArray =  super.mLiquor.getLiquorOrder();
 
-        for(int i=0; i< mArray.length() ;i++)
+        for(int i=0; i< this.mLiquorOrderArray.length() ;i++)
         {
             if(i%2 ==0)
 
@@ -77,11 +80,14 @@ public class AdjustLiquorVolume extends MixLiquor
             {
                 try
                 {
-                    if(b.getBottleValue() == Integer.parseInt(mArray.get(i).toString()))
+                    if(b.getBottleValue() == Integer.parseInt(this.mLiquorOrderArray.get(i).toString()))
                     {
-                        super.mOrder.put(b.name(), mArray.getString(i));
-                        super.mOrder.put(b.name()+ BOTTLE_VOLUME, mArray.getString(i+1));
-                        this.mTempBottleSettings.put(b,mCardInformation.getLiquor().getBottle(b.name()));
+                        String name = this.mCardInformation.getLiquor().getBottle(b.name());
+                        if(((MainActivity)getActivity()).getCurrentBottleSettings().containsValue(name)) {
+                            super.mOrder.put(b.name(), this.mLiquorOrderArray.getString(i));
+                            super.mOrder.put(b.name() + BOTTLE_VOLUME, this.mLiquorOrderArray.getString(i + 1));
+                        }
+                            this.mTempBottleSettings.put(b,name);
                     }
                 } catch (JSONException e)
                 {
@@ -89,7 +95,7 @@ public class AdjustLiquorVolume extends MixLiquor
                 }
             }
         }
-        super.mJSONArrayLiquorOrder = new JSONArray(super.mOrder.values());
+        //super.mLiquorOrderArrayLiquorOrder = new JSONArray(super.mOrder.values());
 
         try
         {
@@ -104,7 +110,7 @@ public class AdjustLiquorVolume extends MixLiquor
             e.printStackTrace();
         }
         super.onActivityCreated(savedInstanceState);
-
+        super.mJSONArrayLiquorOrder = new JSONArray(super.mOrder.values());
     }
 
     @Override
@@ -133,32 +139,34 @@ public class AdjustLiquorVolume extends MixLiquor
 
                     else  if (vg.getChildAt(i) instanceof CircularSeekBar) {
 
-                        vg.getChildAt(i).setTag(mBottle[mCounter]);
+                        vg.getChildAt(i).setTag(new LiquorTag(mBottle[mCounter], isAvailable));
 
-                        for(int m = 0 ;m<mArray.length();m++)
+
+                        for(int m = 0 ;m<mLiquorOrderArray.length();m++)
                         {
                             if(m % 2 == 0)
                             {
-                                if(Integer.parseInt(mArray.getString(m)) == mBottle[mCounter].getBottleValue())
+                                if(Integer.parseInt(mLiquorOrderArray.getString(m)) == mBottle[mCounter].getBottleValue())
                                 {
-                                    ((CircularSeekBar) vg.getChildAt(i)).setProgress(Integer.parseInt(mArray.getString(m + 1)));
+                                    ((CircularSeekBar) vg.getChildAt(i)).setProgress(Integer.parseInt(mLiquorOrderArray.getString(m + 1)));
                                 }
                             }
                         }
                         ((CircularSeekBar) vg.getChildAt(i)).setOnSeekBarChangeListener(new SeekBarListener());
+                        super.mCircularSeekBar.put(mBottle[mCounter], (CircularSeekBar) vg.getChildAt(i));
 
                     }
                     else  if (vg.getChildAt(i) instanceof PlayFontTextView) {
 
                         if (vg.getChildAt(i).getTag() != null) {
                             // Log.e("Bottle: ",mBottle[mCounter]+"");
-                            for(int m = 0 ;m<mArray.length();m++)
+                            for(int m = 0 ;m<mLiquorOrderArray.length();m++)
                             {
                                 if(m % 2 == 0)
                                 {
-                                    if(Integer.parseInt(mArray.getString(m)) == mBottle[mCounter].getBottleValue())
+                                    if(Integer.parseInt(mLiquorOrderArray.getString(m)) == mBottle[mCounter].getBottleValue())
                                     {
-                                        ((TextView) vg.getChildAt(i)).setText(mArray.get(m+1).toString() + "ml");
+                                        ((TextView) vg.getChildAt(i)).setText(mLiquorOrderArray.get(m+1).toString() + "ml");
                                     }
                                 }
                             }
@@ -180,7 +188,8 @@ public class AdjustLiquorVolume extends MixLiquor
                                 //if(mTempString == getResources().getString(R.string.liquor_label_default_value))
                                    // ((TextView) vg.getChildAt(i)).setTextColor(getResources().getColor(R.color.fab_material_red_500));
                                 ((TextView) vg.getChildAt(i)).setText(mTempString);
-                                filter(((MainActivity) getActivity()).getCurrentBottleSettings().values(), ((TextView) vg.getChildAt(i)));
+
+                                    filter(((MainActivity) getActivity()).getCurrentBottleSettings().values(), ((TextView) vg.getChildAt(i)),super.mCircularSeekBar.get(mBottle[mCounter]));
                                /* if(mTempBottleSettings.get(mBottle[mCounter]) == null)
                                     ((TextView) vg.getChildAt(i)).setText(getActivity().getResources().getString(R.string.liquor_label_default_value));
                                 else
@@ -211,21 +220,110 @@ public class AdjustLiquorVolume extends MixLiquor
 
     @Override
     protected void filter(Collection<String> list, Object... obj) {
-        for(String s:list)
+        TextView mTempTextView =((TextView)obj[0]);
+        CircularSeekBar mTempCircularSeekBar = ((CircularSeekBar)obj[1]);
+                mTempTextView.setTextColor(getResources().getColor(R.color.fab_material_red_500));
+        /*for(String s:list)
         {
-            Log.e("string", s);
 
+            Log.e("string ",s + " == " + ((TextView)obj[0]).getText().toString());
+            if(!((TextView)obj[0]).getText().toString().equalsIgnoreCase(getResources().getString(R.string.liquor_label_default_value)))
             if(!s.equalsIgnoreCase(((TextView)obj[0]).getText().toString()))
             {
-                ((TextView)obj[0]).setTextColor(getResources().getColor(R.color.fab_material_red_500));
+                //((TextView)obj[0]).setTextColor(getResources().getColor(R.color.fab_material_red_500));
+                isAvailable = false;
+                //super.mJSONArrayLiquorOrder = new JSONArray(super.mOrder.values());
+
+                //super.mOrder.remove(((TextView)obj[0]).getText().toString());
+                super.mOrder.entrySet().remove(((TextView)obj[0]).getText().toString());
                 continue;
             } else {
-                ((TextView)obj[0]).setTextColor(getResources().getColor(R.color.material_gray));
+                ((TextView)obj[0]).setTextColor(getResources().getColor(R.color.material_lightpurple));
                 // triggeredView.setEnabled(true);
+                isAvailable = true;
                 break;
             }
+        }*/
+
+        for(String s: list)
+        {
+            if(!((TextView)obj[0]).getText().toString().equalsIgnoreCase(getResources().getString(R.string.liquor_label_default_value)))
+                if(!s.equalsIgnoreCase(((TextView)obj[0]).getText().toString()))
+                {
+                    /*for (Iterator<Map.Entry<Bottle, String>> it = super.mCurrentBottleSettings.entrySet().iterator(); it.hasNext(); )
+                    {
+                        Map.Entry<Bottle, String> entry = it.next();
+
+                        Log.e("iterator", entry.getValue().toString() + " == " + ((TextView)obj[0]).getText().toString());
+                        if (!entry.getValue().equals(((TextView)obj[0]).getText().toString()))
+                        {
+
+                            it.remove();
+                        }
+                    }*/
+                    //mCurrentBottleSettings.entrySet().remove(((TextView)obj[0]).getText().toString());
+                    isAvailable = false;
+                    continue;
+                }
+                else
+                {
+                    mTempTextView.setTextColor(getResources().getColor(R.color.material_lightpurple));
+                    isAvailable = true;
+                    break;
+                }
         }
+        mTempCircularSeekBar.setEnabled(isAvailable);
+
     }
+
+    protected void filter2(Collection<String> list, Object... obj) {
+        ((TextView)obj[0]).setTextColor(getResources().getColor(R.color.fab_material_red_500));
+        for(String s:list)
+        {
+
+            Log.e("string ",s + " == " + ((TextView)obj[0]).getText().toString());
+            if(!((TextView)obj[0]).getText().toString().equalsIgnoreCase(getResources().getString(R.string.liquor_label_default_value)))
+                if(!s.equalsIgnoreCase(((TextView)obj[0]).getText().toString()))
+                {
+                    //((TextView)obj[0]).setTextColor(getResources().getColor(R.color.fab_material_red_500));
+                    isAvailable = false;
+                    //super.mJSONArrayLiquorOrder = new JSONArray(super.mOrder.values());
+
+                    //super.mOrder.remove(((TextView)obj[0]).getText().toString());
+                    super.mOrder.entrySet().remove(((TextView)obj[0]).getText().toString());
+                    continue;
+                } else {
+                    ((TextView)obj[0]).setTextColor(getResources().getColor(R.color.material_lightpurple));
+                    // triggeredView.setEnabled(true);
+                    isAvailable = true;
+                    break;
+                }
+        }
+
+
+            for(String s:list)
+            {
+                if(!((TextView)obj[0]).getText().toString().equalsIgnoreCase(getResources().getString(R.string.liquor_label_default_value)))
+                    if(!s.equalsIgnoreCase(((TextView)obj[0]).getText().toString()))
+                    {
+                        //((TextView)obj[0]).setTextColor(getResources().getColor(R.color.fab_material_red_500));
+                        isAvailable = false;
+                        //super.mJSONArrayLiquorOrder = new JSONArray(super.mOrder.values());
+
+                        super.mOrder.entrySet().remove(((TextView)obj[0]).getText().toString());
+                        continue;
+                    } else {
+                        ((TextView)obj[0]).setTextColor(getResources().getColor(R.color.material_lightpurple));
+                        // triggeredView.setEnabled(true);
+                        isAvailable = true;
+                        break;
+                    }
+            }
+
+
+    }
+
+
 
     @Override
     public void onClick(View v)

@@ -45,7 +45,6 @@ import com.fluxinated.mixins.R;
 
 
 public class CircularSeekBar extends View {
-
     /**
      * Used to scale the dp units to pixels
      */
@@ -79,6 +78,10 @@ public class CircularSeekBar extends View {
     private static final boolean DEFAULT_MAINTAIN_EQUAL_CIRCLE = true;
     private static final boolean DEFAULT_MOVE_OUTSIDE_CIRCLE = false;
     private static final boolean DEFAULT_LOCK_ENABLED = true;
+    private static final int DEFAULT_DISABLED_CIRCLE_PROGRESS_COLOR = Color.argb(235, 204, 204, 204);
+    private static final int DEFAULT_DISABLED_POINTER_COLOR = Color.argb(135, 204, 204, 204);
+    private static final int DEFAULT_DISABLED_POINTER_HALO_COLOR = Color.argb(135, 204, 204, 204);
+    private int mProgressColorBackup,mPointerColorBackup,mPointerHaloColorBackup;
 
     /**
      * {@code Paint} instance used to draw the inactive circle.
@@ -374,6 +377,7 @@ public class CircularSeekBar extends View {
         if (tempColor != null) {
             try {
                 mPointerColor = Color.parseColor(tempColor);
+                mPointerColorBackup = mPointerColor;
             } catch (IllegalArgumentException e) {
                 mPointerColor = DEFAULT_POINTER_COLOR;
             }
@@ -383,6 +387,7 @@ public class CircularSeekBar extends View {
         if (tempColor != null) {
             try {
                 mPointerHaloColor = Color.parseColor(tempColor);
+                mPointerHaloColorBackup = mPointerHaloColor;
             } catch (IllegalArgumentException e) {
                 mPointerHaloColor = DEFAULT_POINTER_HALO_COLOR;
             }
@@ -410,10 +415,15 @@ public class CircularSeekBar extends View {
         if (tempColor != null) {
             try {
                 mCircleProgressColor = Color.parseColor(tempColor);
+                if(!isEnabled())
+                    mCircleProgressColor = DEFAULT_DISABLED_CIRCLE_PROGRESS_COLOR;
+                mProgressColorBackup = mCircleProgressColor;
             } catch (IllegalArgumentException e) {
                 mCircleProgressColor = DEFAULT_CIRCLE_PROGRESS_COLOR;
             }
         }
+
+
 
         tempColor = attrArray.getString(R.styleable.CircularSeekBar_circle_fill);
         if (tempColor != null) {
@@ -710,6 +720,7 @@ public class CircularSeekBar extends View {
         cwDistanceFromEnd = (cwDistanceFromEnd < 0 ? 360f + cwDistanceFromEnd : cwDistanceFromEnd); // Verified
         ccwDistanceFromEnd = 360f - cwDistanceFromEnd; // Verified
 
+        if(isEnabled())
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 // These are only used for ACTION_DOWN for handling if the pointer was the part that was touched
@@ -923,6 +934,29 @@ public class CircularSeekBar extends View {
 
     public void setOnSeekBarChangeListener(OnCircularSeekBarChangeListener l) {
         mOnCircularSeekBarChangeListener = l;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+            //mCircleProgressColor = DEFAULT_DISABLED_CIRCLE_PROGRESS_COLOR;
+        if(!enabled) {
+            mCircleProgressPaint.setColor(DEFAULT_DISABLED_CIRCLE_PROGRESS_COLOR);
+            mPointerPaint.setColor(DEFAULT_DISABLED_POINTER_COLOR);
+            mCircleProgressGlowPaint.set(mCircleProgressPaint);
+            mPointerHaloPaint.setColor(DEFAULT_DISABLED_POINTER_HALO_COLOR);
+            //mPointerHaloBorderPaint.set(mPointerPaint);
+        }
+        else
+        {
+            mCircleProgressPaint.setColor(mProgressColorBackup);
+            mPointerPaint.setColor(mPointerColorBackup);
+            mCircleProgressGlowPaint.set(mCircleProgressPaint);
+            mPointerHaloPaint.setColor(mPointerHaloColorBackup);
+            //mPointerHaloBorderPaint.set(mPointerPaint);
+        }
+
+        //invalidate();
+        super.setEnabled(enabled);
     }
 
     /**

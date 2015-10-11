@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="object_identifier_tag">12345</integer>
+    <integer name="availability_status_tag">54321</integer>
+</resources>
