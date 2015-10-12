@@ -174,8 +174,9 @@
                     android:tag="measurement"
                     android:text="0ml"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="@color/material_lightblue"
-                    android:textSize="30sp" />
+                    android:textColor="@color/material_lightblue_button_textcolor_selector"
+                    android:textSize="30sp"
+                    />
             </FrameLayout>
 
 
@@ -187,9 +188,10 @@
                     android:singleLine="true"
                     android:ellipsize="marquee"
                     android:marqueeRepeatLimit="marquee_forever"
-                    android:textColor="@color/material_lightpurple"
+                    android:textColor="@color/material_lightblue_button_textcolor_selector"
                     android:textSize="20sp"
-                    android:gravity="center|center_horizontal"/>
+                    android:gravity="center|center_horizontal"
+                    />
             </LinearLayout>
 
 
@@ -229,7 +231,7 @@
                     android:tag="measurement"
                     android:text="0ml"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="@color/material_lightblue"
+                    android:textColor="@color/material_lightblue_button_textcolor_selector"
                     android:textSize="30sp"
                     />
             </FrameLayout>
@@ -242,7 +244,7 @@
                     android:ellipsize="marquee"
                     android:marqueeRepeatLimit="marquee_forever"
                     android:gravity="center|center_horizontal"
-                    android:textColor="@color/material_lightpurple"
+                    android:textColor="@color/material_lightblue_button_textcolor_selector"
                     android:textSize="20sp"/>
             </LinearLayout>
         </LinearLayout>
@@ -287,7 +289,7 @@
                         android:tag="measurement"
                         android:text="0ml"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textColor="@color/material_lightblue"
+                        android:textColor="@color/material_lightblue_button_textcolor_selector"
                         android:textSize="30sp"/>
                 </FrameLayout>
 
@@ -301,7 +303,7 @@
                     android:ellipsize="marquee"
                     android:gravity="center|center_horizontal"
                     android:marqueeRepeatLimit="marquee_forever"
-                    android:textColor="@color/material_lightpurple"
+                    android:textColor="@color/material_lightblue_button_textcolor_selector"
                     android:textSize="20sp"/>
             </LinearLayout>
 
@@ -342,7 +344,7 @@
                         android:tag="measurement"
                         android:text="0ml"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textColor="@color/material_lightblue"
+                        android:textColor="@color/material_lightblue_button_textcolor_selector"
                         android:textSize="30sp"
                         />
                 </FrameLayout>
@@ -355,7 +357,7 @@
                     android:ellipsize="marquee"
                     android:gravity="center|center_horizontal"
                     android:marqueeRepeatLimit="marquee_forever"
-                    android:textColor="@color/material_lightpurple"
+                    android:textColor="@color/material_lightblue_button_textcolor_selector"
                     android:textSize="20sp"/>
             </LinearLayout>
         </LinearLayout>
@@ -400,7 +402,7 @@
                         android:tag="measurement"
                         android:text="0ml"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textColor="@color/material_lightblue"
+                        android:textColor="@color/material_lightblue_button_textcolor_selector"
                         android:textSize="30sp"/>
                 </FrameLayout>
 
@@ -414,7 +416,7 @@
                     android:ellipsize="marquee"
                     android:gravity="center|center_horizontal"
                     android:marqueeRepeatLimit="marquee_forever"
-                    android:textColor="@color/material_lightpurple"
+                    android:textColor="@color/material_lightblue_button_textcolor_selector"
                     android:textSize="20sp"/>
             </LinearLayout>
 
@@ -455,7 +457,7 @@
                         android:tag="measurement"
                         android:text="0ml"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textColor="@color/material_lightblue"
+                        android:textColor="@color/material_lightblue_button_textcolor_selector"
                         android:textSize="30sp"
                         />
                 </FrameLayout>
@@ -468,7 +470,7 @@
                     android:ellipsize="marquee"
                     android:gravity="center|center_horizontal"
                     android:marqueeRepeatLimit="marquee_forever"
-                    android:textColor="@color/material_lightpurple"
+                    android:textColor="@color/material_lightblue_button_textcolor_selector"
                     android:textSize="20sp"/>
             </LinearLayout>
         </LinearLayout>

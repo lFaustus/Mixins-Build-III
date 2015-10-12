@@ -8,28 +8,11 @@ import com.fluxinated.mixins.enums.Bottle;
 public class LiquorTag {
 
     private Bottle mBottle;
-    private boolean isAvailable;
+    private String mPresentLiquor;
 
-    public LiquorTag(Bottle mBottle, boolean isAvailable) {
+    public LiquorTag(Bottle mBottle, String mPresentLiquor)
+    {
         this.mBottle = mBottle;
-        this.isAvailable = isAvailable;
-    }
-
-
-
-    public Bottle getBottle() {
-        return mBottle;
-    }
-
-    public void setBottle(Bottle mBottle) {
-        this.mBottle = mBottle;
-    }
-
-    public boolean isAvailable() {
-        return isAvailable;
-    }
-
-    public void setAvailability(boolean isAvailable) {
-        this.isAvailable = isAvailable;
+        this.mPresentLiquor = mPresentLiquor;
     }
 }

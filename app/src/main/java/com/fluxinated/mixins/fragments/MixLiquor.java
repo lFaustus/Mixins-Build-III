@@ -24,14 +24,12 @@ import com.fluxinated.mixins.customviews.PlayFontTextView;
 import com.fluxinated.mixins.enums.Bottle;
 import com.fluxinated.mixins.filechooser.FileChooser;
 import com.fluxinated.mixins.model.Liquor;
-import com.fluxinated.mixins.model.LiquorTag;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
@@ -51,7 +49,7 @@ public class MixLiquor extends BaseLiquorFragment
     protected TextView mTextView;
     protected boolean isAvailable = true;
     protected Button mMixButton;
-    protected Map<Bottle, CircularSeekBar> mCircularSeekBar;
+
 
     public MixLiquor(){}
 
@@ -126,8 +124,8 @@ public class MixLiquor extends BaseLiquorFragment
 
                     else*/  if (vg.getChildAt(i) instanceof CircularSeekBar) {
 
-                        //vg.getChildAt(i).setTag(mBottle[mCounter]);
-                        vg.getChildAt(i).setTag(new LiquorTag(mBottle[mCounter], isAvailable));
+                        vg.getChildAt(i).setTag(mBottle[mCounter]);
+                        //vg.getChildAt(i).setTag(new LiquorTag(mBottle[mCounter], isAvailable));
                         ((CircularSeekBar) vg.getChildAt(i)).setOnSeekBarChangeListener(new SeekBarListener());
 
                     }
@@ -136,6 +134,7 @@ public class MixLiquor extends BaseLiquorFragment
                         if (vg.getChildAt(i).getTag() != null) {
                            // Log.e("Bottle: ",mBottle[mCounter]+"");
                             mTextViewSeekBarValue.put(mBottle[mCounter], (PlayFontTextView) vg.getChildAt(i));
+                            vg.getChildAt(i).setActivated(true);
 
                         }
                         else
@@ -145,6 +144,7 @@ public class MixLiquor extends BaseLiquorFragment
                                 vg.getChildAt(i).setOnClickListener(this);
                                 ((TextView)vg.getChildAt(i)).setSelected(true);
                                 vg.getChildAt(i).setTag(mBottle[mCounter]);
+                                vg.getChildAt(i).setActivated(true);
                                 ((TextView) vg.getChildAt(i)).setText(mCurrentBottleSettings.get(mBottle[mCounter]));
                                 if(((TextView) vg.getChildAt(i)).getText().equals(getResources().getString(R.string.liquor_label_default_value)))
                                     ((TextView) vg.getChildAt(i)).setTextColor(getResources().getColor(R.color.fab_material_red_500));
@@ -216,7 +216,7 @@ public class MixLiquor extends BaseLiquorFragment
     }
 
 
-    private void openDialog(View triggeredView,View layout,String button1_label,String button2_label,String message,View... extra)
+    protected void openDialog(View triggeredView,View layout,String button1_label,String button2_label,String message,View... extra)
     {
         if(mDialog == null)
         {
@@ -233,13 +233,7 @@ public class MixLiquor extends BaseLiquorFragment
                 al.setMessage(message);
 
 
-            if (MixLiquor.this.getClass().equals(AdjustLiquorVolume.class) && triggeredView.getId() == R.id.add_button_drinks)
-            {
-                ((EditText) extra[0]).setText(mLiquorName);
-                 extra[0].setEnabled(false);
-                ((EditText) extra[1]).setText(mLiquorDescription);
-                 extra[1].requestFocus();
-            }
+
 
             //setting up buttons
             al.setOnCancelListener(new DialogInterface.OnCancelListener()
@@ -285,6 +279,7 @@ public class MixLiquor extends BaseLiquorFragment
                                         mJSONObjectLiquor.put(map.getKey(), map.getValue());
                                 }
                                 //sets the liquor order array into JSONObject
+                                mJSONArrayLiquorOrder = new JSONArray(mOrder.values());
                                 mJSONObjectLiquor.put("Order", mJSONArrayLiquorOrder);
 
                                 //sets the date added into JSONObject
@@ -293,7 +288,7 @@ public class MixLiquor extends BaseLiquorFragment
 
                                 if (triggeredView.getId() != R.id.mix_button_drinks) {
 
-                                    if (!MixLiquor.this.getClass().equals(AdjustLiquorVolume.class)) {
+
                                         mLiquorName = ((EditText) extra[0]).getText().toString();
                                         mLiquorDescription = ((EditText) extra[1]).getText().toString();
 
@@ -309,30 +304,10 @@ public class MixLiquor extends BaseLiquorFragment
                                         else
                                             Toast.makeText(getActivity(), "Failed to add mixture! Please try again", Toast.LENGTH_SHORT).show();
 
-                                    } else {
 
-
-                                        mLiquorDescription = ((EditText) extra[1]).getText().toString();
-                                        //sets the liquor name into JSONObject
-                                        mJSONObjectLiquor.put(Liquor.JSONDB_LIQUOR_NAME, mLiquorName);
-
-                                        //sets the liquor description into JSONObject
-                                        mJSONObjectLiquor.put(Liquor.JSONDB_LIQUOR_DESCRIPTION, mLiquorDescription);
-
-
-                                        if (((MainActivity) getActivity()).UpdateLiquor(mJSONObjectLiquor, mLiquorID)) {
-                                            mLiquor.setJSONLiquor(mJSONObjectLiquor);
-                                            Toast.makeText(getActivity(), "updated successfully", Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            Toast.makeText(getActivity(), "updated failed! Please try again", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
 
                                 }
-                                if (MixLiquor.this.getClass().equals(AdjustLiquorVolume.class)) {
-                                    Log.e("mLiquorName", mLiquorName);
-                                    Log.e("mLiquorDesc", mLiquorDescription);
-                                }
+
                                 Log.e("JSONADD", mJSONObjectLiquor.toString());
                             } catch (JSONException exp) {
                                 Toast.makeText(getActivity(), "Opps Something went wrong", Toast.LENGTH_SHORT).show();
@@ -345,40 +320,14 @@ public class MixLiquor extends BaseLiquorFragment
                             TextView mTextView = (TextView) triggeredView;
                             EditText mEditText = (EditText) extra[0];
                             mTextView.setText(mEditText.getText());
-                            if (!MixLiquor.this.getClass().equals(AdjustLiquorVolume.class)) {
+
                                 //mTextView.setTextColor(getResources().getColor(R.color.material_gray));
                                 SharedPreferences.Editor editor = ((MainActivity) getActivity()).getSharedPreferences().edit();
                                 Bottle b = (Bottle) mTextView.getTag();
                                 editor.putString(b.name(), mTextView.getText().toString());
                                 editor.commit();
                                 mCurrentBottleSettings.put(b, mTextView.getText().toString());
-                            } else {
-                                Bottle b = (Bottle) mTextView.getTag();
-                                mTextView.setTextColor(getResources().getColor(R.color.fab_material_red_500));
-                                //triggeredView.setEnabled(false);
-                                filter(((MainActivity) getActivity()).getCurrentBottleSettings().values(), mTextView);
 
-                                Log.e("isAvailable", isAvailable + "");
-                                mMixButton.setEnabled(isAvailable);
-
-
-
-                               /* for (String s : ((MainActivity) getActivity()).getCurrentBottleSettings().values()) {
-
-                                    if (!s.equalsIgnoreCase(mTextView.getText().toString())) {
-                                        continue;
-                                        // break;
-                                    } else {
-                                        mTextView.setTextColor(getResources().getColor(R.color.material_gray));
-                                       // triggeredView.setEnabled(true);
-                                        break;
-                                    }
-
-
-                                }*/
-
-                                mCurrentBottleSettings.put(b, mTextView.getText().toString());
-                            }
 
                             break;
                     }
@@ -396,27 +345,7 @@ public class MixLiquor extends BaseLiquorFragment
         }
     }
 
-    protected void filter(Collection<String> list,Object... obj)
-    {
-        ((TextView)obj[0]).setTextColor(getResources().getColor(R.color.fab_material_red_500));
-        for(String s:list)
-        {
-            Log.e("string", s);
 
-            if(!s.equalsIgnoreCase(((TextView)obj[0]).getText().toString()))
-            {
-                //((TextView)obj[0]).setTextColor(getResources().getColor(R.color.fab_material_red_500));
-                isAvailable = false;
-                continue;
-            } else {
-                ((TextView)obj[0]).setTextColor(getResources().getColor(R.color.material_lightpurple));
-                // triggeredView.setEnabled(true);
-                isAvailable = true;
-                break;
-            }
-        }
-
-    }
 
     protected class SeekBarListener implements  CircularSeekBar.OnCircularSeekBarChangeListener
     {
@@ -430,7 +359,7 @@ public class MixLiquor extends BaseLiquorFragment
 
         @Override
         public void onStopTrackingTouch(CircularSeekBar seekBar) {
-            Bottle bottle = ((LiquorTag)seekBar.getTag()).getBottle();
+            Bottle bottle = (Bottle) seekBar.getTag();
             if (mOrder.get(bottle.name()) == null && seekBar.getProgress() != 0) {
                 mOrder.put(bottle.name(), String.valueOf(bottle.getBottleValue()));
                 mOrder.put(bottle.name() + BOTTLE_VOLUME, String.valueOf(seekBar.getProgress()));
@@ -445,14 +374,14 @@ public class MixLiquor extends BaseLiquorFragment
                 }
             }
 
-            if(MixLiquor.this.getClass().equals(AdjustLiquorVolume.class) &&
+            /*if(MixLiquor.this.getClass().equals(AdjustLiquorVolume.class) &&
                     ((MainActivity)getActivity()).getCurrentBottleSettings()
                                                  .containsValue(bottle.name())
                     && !isAvailable)
             {
                 mOrder.remove(bottle.name());
                 mOrder.remove(bottle.name() + BOTTLE_VOLUME);
-            }
+            }*/
             // Log.i("Order",mOrder.values()+"");
             /*
              *Checking the size of liquor order array
@@ -467,13 +396,13 @@ public class MixLiquor extends BaseLiquorFragment
             if(mOrder.values().size() == 0)
                 mMixButton.setEnabled(false);
 
-            mJSONArrayLiquorOrder = new JSONArray(mOrder.values());
+            //mJSONArrayLiquorOrder = new JSONArray(mOrder.values());
 
         }
 
         @Override
         public void onStartTrackingTouch(CircularSeekBar seekBar) {
-            mSeekBarTextViewValue = mTextViewSeekBarValue.get(((LiquorTag)seekBar.getTag()).getBottle());
+            mSeekBarTextViewValue = mTextViewSeekBarValue.get(seekBar.getTag());
             Log.e("track","track");
 
         }

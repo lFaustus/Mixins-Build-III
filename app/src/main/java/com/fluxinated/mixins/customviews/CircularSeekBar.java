@@ -79,9 +79,9 @@ public class CircularSeekBar extends View {
     private static final boolean DEFAULT_MOVE_OUTSIDE_CIRCLE = false;
     private static final boolean DEFAULT_LOCK_ENABLED = true;
     private static final int DEFAULT_DISABLED_CIRCLE_PROGRESS_COLOR = Color.argb(235, 204, 204, 204);
-    private static final int DEFAULT_DISABLED_POINTER_COLOR = Color.argb(135, 204, 204, 204);
+    private static final int DEFAULT_DISABLED_POINTER_COLOR = Color.argb(180, 204, 204, 204);
     private static final int DEFAULT_DISABLED_POINTER_HALO_COLOR = Color.argb(135, 204, 204, 204);
-    private int mProgressColorBackup,mPointerColorBackup,mPointerHaloColorBackup;
+    private int mProgressColorBackup,mPointerColorBackup,mPointerHaloColorBackup,mPointerHaloColorOnTouchBackup;
 
     /**
      * {@code Paint} instance used to draw the inactive circle.
@@ -360,6 +360,9 @@ public class CircularSeekBar extends View {
      */
     private OnCircularSeekBarChangeListener mOnCircularSeekBarChangeListener;
 
+    private boolean mForceProgressUponSeekbarDisability = false;
+
+
     /**
      * Initialize the CircularSeekBar with the attributes from the XML style.
      * Uses the defaults defined at the top of this file when an attribute is not specified by the user.
@@ -377,31 +380,35 @@ public class CircularSeekBar extends View {
         if (tempColor != null) {
             try {
                 mPointerColor = Color.parseColor(tempColor);
-                mPointerColorBackup = mPointerColor;
+
             } catch (IllegalArgumentException e) {
                 mPointerColor = DEFAULT_POINTER_COLOR;
             }
         }
+        mPointerColorBackup = mPointerColor;
 
         tempColor = attrArray.getString(R.styleable.CircularSeekBar_pointer_halo_color);
         if (tempColor != null) {
             try {
                 mPointerHaloColor = Color.parseColor(tempColor);
-                mPointerHaloColorBackup = mPointerHaloColor;
+
             } catch (IllegalArgumentException e) {
                 mPointerHaloColor = DEFAULT_POINTER_HALO_COLOR;
             }
         }
+        mPointerHaloColorBackup = mPointerHaloColor;
 
         tempColor = attrArray.getString(R.styleable.CircularSeekBar_pointer_halo_color_ontouch);
         if (tempColor != null) {
             try {
                 mPointerHaloColorOnTouch = Color.parseColor(tempColor);
+
             } catch (IllegalArgumentException e) {
                 mPointerHaloColorOnTouch = DEFAULT_POINTER_HALO_COLOR_ONTOUCH;
             }
-        }
 
+        }
+        mPointerHaloColorOnTouchBackup = mPointerHaloColorOnTouch;
         tempColor = attrArray.getString(R.styleable.CircularSeekBar_circle_color);
         if (tempColor != null) {
             try {
@@ -720,7 +727,7 @@ public class CircularSeekBar extends View {
         cwDistanceFromEnd = (cwDistanceFromEnd < 0 ? 360f + cwDistanceFromEnd : cwDistanceFromEnd); // Verified
         ccwDistanceFromEnd = 360f - cwDistanceFromEnd; // Verified
 
-        if(isEnabled())
+        if(isEnabled() || mForceProgressUponSeekbarDisability)
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 // These are only used for ACTION_DOWN for handling if the pointer was the part that was touched
@@ -904,6 +911,10 @@ public class CircularSeekBar extends View {
         state.putInt("mPointerAlpha", mPointerAlpha);
         state.putInt("mPointerAlphaOnTouch", mPointerAlphaOnTouch);
         state.putBoolean("lockEnabled", lockEnabled);
+        state.putInt("mPointerColorBackup", mPointerColorBackup);
+        state.putInt("mProgressColorBackup",mProgressColorBackup);
+        state.putInt("mPointerHaloColorBackup",mPointerHaloColorBackup);
+        state.putInt("mPointerHaloColorOnTouchBackup",mPointerHaloColorOnTouchBackup);
 
         return state;
     }
@@ -925,7 +936,10 @@ public class CircularSeekBar extends View {
         mPointerAlpha = savedState.getInt("mPointerAlpha");
         mPointerAlphaOnTouch = savedState.getInt("mPointerAlphaOnTouch");
         lockEnabled = savedState.getBoolean("lockEnabled");
-
+        mPointerColorBackup = savedState.getInt("mPointerColorBackup");
+        mProgressColorBackup = savedState.getInt("mProgressColorBackup");
+        mPointerHaloColorBackup = savedState.getInt("mPointerHaloColorBackup");
+        mPointerHaloColorOnTouchBackup = savedState.getInt("mPointerHaloColorOnTouchBackup");
         initPaints();
 
         recalculateAll();
@@ -940,23 +954,44 @@ public class CircularSeekBar extends View {
     public void setEnabled(boolean enabled) {
             //mCircleProgressColor = DEFAULT_DISABLED_CIRCLE_PROGRESS_COLOR;
         if(!enabled) {
+
+            mPointerHaloColorOnTouch = DEFAULT_DISABLED_POINTER_HALO_COLOR;
+            mPointerHaloColor = DEFAULT_DISABLED_POINTER_HALO_COLOR;
             mCircleProgressPaint.setColor(DEFAULT_DISABLED_CIRCLE_PROGRESS_COLOR);
             mPointerPaint.setColor(DEFAULT_DISABLED_POINTER_COLOR);
             mCircleProgressGlowPaint.set(mCircleProgressPaint);
+            mPointerHaloPaint.set(mPointerPaint);
             mPointerHaloPaint.setColor(DEFAULT_DISABLED_POINTER_HALO_COLOR);
+
+            mPointerHaloBorderPaint.set(mPointerPaint);
+            mPointerHaloBorderPaint.setStrokeWidth(mPointerHaloBorderWidth);
+            mPointerHaloBorderPaint.setStyle(Paint.Style.STROKE);
+
             //mPointerHaloBorderPaint.set(mPointerPaint);
         }
         else
         {
+            mPointerHaloColorOnTouch = mPointerHaloColorOnTouchBackup;
+            mPointerHaloColor = mPointerHaloColorBackup;
             mCircleProgressPaint.setColor(mProgressColorBackup);
             mPointerPaint.setColor(mPointerColorBackup);
             mCircleProgressGlowPaint.set(mCircleProgressPaint);
-            mPointerHaloPaint.setColor(mPointerHaloColorBackup);
+            mPointerHaloPaint.set(mPointerPaint);
+            mPointerHaloPaint.setColor(mPointerHaloColor);
+
+            mPointerHaloBorderPaint.set(mPointerPaint);
+            mPointerHaloBorderPaint.setStrokeWidth(mPointerHaloBorderWidth);
+            mPointerHaloBorderPaint.setStyle(Paint.Style.STROKE);
             //mPointerHaloBorderPaint.set(mPointerPaint);
         }
 
         //invalidate();
         super.setEnabled(enabled);
+    }
+
+    public void setForceProgressUponSeekbarDisability(boolean force)
+    {
+        this.mForceProgressUponSeekbarDisability = force;
     }
 
     /**

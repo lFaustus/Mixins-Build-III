@@ -61,6 +61,7 @@ public class LiquorList extends BaseLiquorFragment implements EndlessStaggeredRe
     public void onActivityCreated(Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
+        Log.e("OnActivityCreated", "OnActivityCreated");
         CARDINFORMATION_TAG = super.mParam;
         this.mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.HORIZONTAL);
         this.mStaggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
