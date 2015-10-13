@@ -20,6 +20,7 @@ import com.fluxinated.mixins.customviews.PlayFontTextView;
 import com.fluxinated.mixins.enums.Bottle;
 import com.fluxinated.mixins.model.CardInformation;
 import com.fluxinated.mixins.model.Liquor;
+import com.fluxinated.mixins.model.LiquorTag;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -203,7 +204,9 @@ public class AdjustLiquorVolume extends MixLiquor
                                 //not the universal bottle setting
                                 vg.getChildAt(i).setOnClickListener(this);
                                 ((TextView) vg.getChildAt(i)).setSelected(true);
-                                vg.getChildAt(i).setTag(mBottle[mCounter]);
+                                LiquorTag mLiquorTag = new LiquorTag();
+                                mLiquorTag.setBottle(mBottle[mCounter]);
+                                vg.getChildAt(i).setTag(mLiquorTag);
                                 //((TextView) vg.getChildAt(i)).setText(mCurrentBottleSettings.get(mBottle[mCounter]));
                                 String mTempString = mCurrentBottleSettings.get(mBottle[mCounter]) == null ?
                                         getResources().getString(R.string.liquor_label_default_value) : mCurrentBottleSettings.get(mBottle[mCounter]);
@@ -320,6 +323,9 @@ public class AdjustLiquorVolume extends MixLiquor
                 ((EditText) extra[1]).setText(mLiquorDescription);
                 extra[1].requestFocus();
             }
+            else if(triggeredView.getId() == View.NO_ID)
+                al.setButton(DialogInterface.BUTTON_NEUTRAL, "Set to " + ((LiquorTag) triggeredView.getTag()).getPresentLiquor(), (dialog, which) -> {
+                });
 
             //setting up buttons
             al.setOnCancelListener(new DialogInterface.OnCancelListener()
@@ -502,7 +508,7 @@ public class AdjustLiquorVolume extends MixLiquor
                             mTextView.setText(mEditText.getText());
 
 
-                            Bottle b = (Bottle) mTextView.getTag();
+                            Bottle b = ((LiquorTag) mTextView.getTag()).getBottle();
                             //mTextView.setTextColor(getResources().getColor(R.color.fab_material_red_500));
                             //triggeredView.setEnabled(false);
 
@@ -544,15 +550,41 @@ public class AdjustLiquorVolume extends MixLiquor
                             mCurrentBottleSettings.put(b, mTextView.getText().toString());
                             //Log.e("isAvailable", isAvailable + "");
                             //mMixButton.setEnabled(isAvailable);
-                            break;
-                    }
+                            mDialog = null;
 
+
+                    }
                     mDialog = null;
                     dialog.dismiss();
+
+
                 }
             });
 
             al.show();
+
+            if(triggeredView.getId() == View.NO_ID)
+            {
+                //((EditText) extra[0]).setHint("Enter Name - (currently available Liquor - "+((LiquorTag) triggeredView.getTag()).getPresentLiquor() + " )");
+
+                extra[1].setVisibility(View.VISIBLE);
+                ((TextView) extra[1]).setText("available liquor for this " + numbersuffix(Integer.parseInt(((LiquorTag) triggeredView.getTag()).getBottle().name().replace("BOTTLE", ""))) + " dispenser  - " + ((LiquorTag) triggeredView.getTag()).getPresentLiquor());
+
+
+
+                Button b = al.getButton(DialogInterface.BUTTON_NEUTRAL);
+                b.setText("Set to " + ((LiquorTag) triggeredView.getTag()).getPresentLiquor());
+                b.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        ((EditText) extra[0]).setText(((LiquorTag) triggeredView.getTag()).getPresentLiquor());
+                    }
+                });
+            }
+
+
            /* WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
             lp.copyFrom(al.getWindow().getAttributes());
             lp.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300, getActivity().getResources().getDisplayMetrics());
@@ -575,6 +607,11 @@ public class AdjustLiquorVolume extends MixLiquor
         for(Iterator<Map.Entry<Bottle,String>> it = list.entrySet().iterator();it.hasNext();)
         {
             Map.Entry<Bottle,String> entry = it.next();
+            if(entry.getKey().name().equals(b.name()))
+            {
+                ((LiquorTag)mTempTextView.getTag()).setPresentLiquor(entry.getValue());
+            }
+
             if(!mTempTextView.getText().toString().equalsIgnoreCase(getResources().getString(R.string.liquor_label_default_value)))
             {
                 if(!entry.getValue().equalsIgnoreCase(mTempTextView.getText().toString()))
@@ -588,13 +625,16 @@ public class AdjustLiquorVolume extends MixLiquor
                     //Log.e("entry key",entry.getKey() + " == " + b.name());
                    // Log.e("entry value", entry.getValue() + "==" + mTempTextView.getText().toString());
 
-                    if(entry.getKey().toString().equals(b.name()))
+                    //if()
+                    if(entry.getKey().name().equals(b.name()))
                     {
-                       // Log.e("true","true");
+                        Log.e("filter",entry.getValue());
                         //mTempTextView.setTextColor(getResources().getColor(R.color.material_lightpurple));
                         isAvailable = true;
                         mTempTextView.setActivated(isAvailable);
+                       // ((LiquorTag)mTempTextView.getTag()).setPresentLiquor(entry.getValue());
                         mTextViewSeekBarValue.get(b).setActivated(isAvailable);
+
                         break;
                     }
                     else
@@ -609,6 +649,8 @@ public class AdjustLiquorVolume extends MixLiquor
             {
                 isAvailable = false;
             }
+
+
         }
         mTempCircularSeekBar.setEnabled(isAvailable);
 
@@ -637,6 +679,16 @@ public class AdjustLiquorVolume extends MixLiquor
         }
         mTempCircularSeekBar.setEnabled(isAvailable);*/
 
+    }
+
+    private String numbersuffix(int number)
+    {
+        switch (number % 10) {
+            case 1:  return String.valueOf(number)+"st";
+            case 2:  return String.valueOf(number)+"nd";
+            case 3:  return String.valueOf(number)+"rd";
+            default: return String.valueOf(number)+"th";
+        }
     }
 
    /* protected void setJSONLiquorOrder(JSONObject mJSONObjectLiquor,Predicate<Object> condition) throws JSONException

@@ -207,8 +207,11 @@ public class MixLiquor extends BaseLiquorFragment
                 {
                     View mView = LayoutInflater.from(getActivity()).inflate(R.layout.bottle_settings, null);
                     EditText mEditText = (EditText) mView.findViewById(R.id.liquor_name_settings);
+                    TextView mTextView = (TextView) mView.findViewById(R.id.liquor_reminder);
+                    //mTextView.setOnClickListener(v1 -> mEditText.setText(((LiquorTag) v.getTag()).getPresentLiquor()));
+                    mTextView.setSelected(true);
                     mEditText.setHint("Name");
-                    openDialog(v, mView,"Cancel","Save",null ,mEditText);
+                    openDialog(v, mView,"Cancel","Save",null ,mEditText,mTextView);
                 }
                 break;
         }

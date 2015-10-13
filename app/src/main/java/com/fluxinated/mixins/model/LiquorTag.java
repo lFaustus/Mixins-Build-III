@@ -15,4 +15,28 @@ public class LiquorTag {
         this.mBottle = mBottle;
         this.mPresentLiquor = mPresentLiquor;
     }
+
+    public LiquorTag()
+    {
+    }
+
+    public Bottle getBottle()
+    {
+        return mBottle;
+    }
+
+    public void setBottle(Bottle mBottle)
+    {
+        this.mBottle = mBottle;
+    }
+
+    public String getPresentLiquor()
+    {
+        return mPresentLiquor;
+    }
+
+    public void setPresentLiquor(String mPresentLiquor)
+    {
+        this.mPresentLiquor = mPresentLiquor;
+    }
 }

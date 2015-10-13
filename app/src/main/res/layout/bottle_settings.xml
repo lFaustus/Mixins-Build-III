@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     android:layout_height="wrap_content"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:padding="5dp">
+    android:padding="5dp"
+    android:orientation="vertical">
     <include android:id="@+id/liquor_name_settings"
         layout="@layout/rounded_edittext"/>
+    <com.fluxinated.mixins.customviews.PlayFontTextView
+        android:id="@+id/liquor_reminder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:textColor="@color/pink_pressed"
+        android:visibility="gone"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:ems="10"
+        />
 <!--EditText
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
