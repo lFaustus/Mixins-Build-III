@@ -478,7 +478,7 @@ public class AdjustLiquorVolume extends MixLiquor
                                     mJSONObjectLiquor.put(Liquor.JSONDB_LIQUOR_DESCRIPTION, mLiquorDescription);
 
 
-                                    if (((MainActivity) getActivity()).UpdateLiquor(mJSONObjectLiquor, mLiquorID))
+                                    if (((MainActivity) getActivity()).UpdateLiquor(Integer.valueOf(mLiquorID),mLiquorName,mLiquorDescription,mJSONObjectLiquor ))
                                     {
                                         mLiquor.setJSONLiquor(mJSONObjectLiquor);
                                         Toast.makeText(getActivity(), "updated successfully", Toast.LENGTH_SHORT).show();

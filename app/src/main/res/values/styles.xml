@@ -25,6 +25,9 @@
 
     <style  name="add_drinks_ui_button">
         <item name="android:background">@drawable/add_drinks_ui_button</item>
+        <!--item name="android:background">?android:attr/selectableItemBackground</item-->
+        <!--item name="android:background">?android:attr/borderlessButtonStyle</item-->
+
         <item name="android:textColor">@color/white</item>
         <item name="android:gravity">center</item>
         <item name="android:textSize">15sp</item>
@@ -34,6 +37,12 @@
 
     <style name="mix_drinks_ui_button" parent="add_drinks_ui_button">
         <item name="android:background">@drawable/mix_drinks_ui_button</item>
+    </style>
+
+    <style name="close_search_button" parent="add_drinks_ui_button">
+        <item name="android:background">@drawable/search_close_ui_button</item>
+        <!--item name="android:background">?android:attr/selectableItemBackground</item-->
+        <item name="android:textColor">@color/half_black</item>
     </style>
 
     <style name="liquor_dialog_ui">

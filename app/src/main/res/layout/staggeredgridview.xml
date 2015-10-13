@@ -24,6 +24,17 @@
         fab:fab_labelsPosition="right"
         android:layout_marginTop="5dp"
         >
+
+        <com.fluxinated.mixins.floatingactionbuttons.floatingactionbutton.FloatingActionButton
+            android:tag="fab"
+            android:id="@+id/floating_side_button_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="#673AB7"
+            fab:fab_colorPressed="@color/white_pressed"
+            fab:fab_title="Settings"
+            />
+
         <com.fluxinated.mixins.floatingactionbuttons.floatingactionbutton.FloatingActionButton
             android:tag="fab"
             android:id="@+id/floating_side_button_2"
@@ -43,19 +54,16 @@
             fab:fab_colorPressed="@color/white_pressed"
             fab:fab_title="Create your own mixture"
             />
-
-        <!--com.fluxinated.mixins.floatingactionbuttons.floatingactionbutton.FloatingActionButton
-            android:tag="fab"
-            android:id="@+id/floating_side_button_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            fab:fab_colorNormal="#673AB7"
-            fab:fab_colorPressed="@color/white_pressed"
-            fab:fab_title="Add New Liquor"
-            /-->
-
-
-
     </com.fluxinated.mixins.floatingactionbuttons.floatingactionbutton.FloatingActionsMenu>
+
+    <include layout="@layout/searchfield"
+             android:id="@+id/search_view"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_gravity="top|right"
+             android:layout_marginTop="10dp"
+             android:layout_marginRight="10dp"
+             android:visibility="gone"
+        />
 
 </FrameLayout>

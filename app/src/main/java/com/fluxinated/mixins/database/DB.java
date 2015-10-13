@@ -37,16 +37,18 @@ public class DB
         SQLiteDatabase db = mDbHelper.openToWriteDB();
         ContentValues mContentValues = new ContentValues();
         try{
-            for (Object param : params)
+            //for (Object param : params)
+            for (int i = 0; i<params.length;i++)
             {
-                if (param instanceof JSONObject)
-                {
-                    mContentValues.put(DBhelper.mTableColumns[1], param.toString());
-                    db.insertOrThrow(DBhelper.mTableName, null, mContentValues);
+                //if (param instanceof JSONObject)
+                //{
+                    mContentValues.put(DBhelper.mTableColumns[i + 1], params[i].toString());
+
                     Log.i("SUCCESS","SUCC");
-                }
+                //}
             }
            // db.setTransactionSuccessful();
+            db.insertOrThrow(DBhelper.mTableName, null, mContentValues);
             isSuccess = true;
         }
         catch(Exception exp)
@@ -84,11 +86,16 @@ public class DB
 
     }
 
-    public void select(int offset, ArrayList<CardInformation> cardInformations)
+    public void select(int offset, ArrayList<CardInformation> cardInformations,String args)
     {
         SQLiteDatabase db = mDbHelper.openToReadDB();
         //Cursor cursor = db.query(DBhelper.mTableName, DBhelper.mTableColumns, null, null, null, null, null, "LIMIT 10 OFFSET 10");
-        Cursor cursor =  db.rawQuery("Select * from " + DBhelper.mTableName +" LIMIT 10 OFFSET " + offset,null);
+        //Log.i("String query","Select * from " + DBhelper.mTableName + " WHERE "+getDBColumns()[1] +" LIKE '%"+args+"%' OR WHERE "+getDBColumns()[2]+" LIKE '%"+args+"%' LIMIT 10 OFFSET " + offset);
+        Cursor cursor;
+        if(args == null)
+             cursor =  db.rawQuery("Select * from " + DBhelper.mTableName +" LIMIT 10 OFFSET " + offset,null);
+        else
+            cursor = db.rawQuery("Select * from " + DBhelper.mTableName + " WHERE "+getDBColumns()[1] +" LIKE '%"+args+"%' OR "+getDBColumns()[2]+" LIKE '%"+args+"%' LIMIT 10 OFFSET " + offset,null);
         Liquor mTempLiquor;
         CardInformation mTempInfo;
         JSONObject mJsonObject;
@@ -96,10 +103,10 @@ public class DB
         {
             try
             {
-                mJsonObject = new JSONObject(cursor.getString(cursor.getColumnIndex(this.getDBColumns()[1])));
+                mJsonObject = new JSONObject(cursor.getString(cursor.getColumnIndex(this.getDBColumns()[3])));
                 mTempLiquor = new Liquor(mJsonObject);
                 mTempLiquor.setLiquorId(cursor.getInt(cursor.getColumnIndex(this.getDBColumns()[0])));
-                Log.i("Liquor ID",mTempLiquor.getLiquorId()+"");
+                //Log.i("Liquor ID",mTempLiquor.getLiquorId()+"");
                 mTempInfo = new CardInformation(mTempLiquor);
                 cardInformations.add(mTempInfo);
             }
@@ -117,21 +124,35 @@ public class DB
         boolean isSuccess = false;
         SQLiteDatabase db = mDbHelper.openToWriteDB();
         ContentValues mContentValues = new ContentValues();
+        int id = 0;
         try
         {
-            for(Object obj:params)
+            //for(Object obj:params)
+            for(int i = 0; i< params.length ; i++)
             {
-                if(obj instanceof JSONObject)
+                if(params[i] instanceof JSONObject)
                 {
-                    mContentValues.put(DBhelper.mTableColumns[1], obj.toString());
+                    mContentValues.put(DBhelper.mTableColumns[i], params[i].toString());
                     //db.insertOrThrow(DBhelper.mTableName, null, mContentValues);
+                    Log.e("update string",params[i].toString());
+                }
+                else if(params[i] instanceof Integer)
+                {
+                    id = (Integer)params[i];
                 }
                 else
                 {
-                    db.update(DBhelper.mTableName, mContentValues, DBhelper.mTableColumns[0] + " =" + obj.toString(), null);
-                    Log.e("object string",obj.toString());
+                    mContentValues.put(DBhelper.mTableColumns[i], params[i].toString());
                 }
+
+               // else
+                //{
+                    //db.update(DBhelper.mTableName, mContentValues, DBhelper.mTableColumns[0] + " =" + obj.toString(), null);
+                    //Log.e("object string",obj.toString());
+                //}
             }
+            db.update(DBhelper.mTableName, mContentValues, DBhelper.mTableColumns[0] + " =" + String.valueOf(id), null);
+
             isSuccess = true;
             //Toast.makeText(MyApplication.getAppContext(),"updated successfully", Toast.LENGTH_SHORT).show();
         }
@@ -161,7 +182,9 @@ public class DB
         private static final int mDbVersion =MyApplication.getAppContext().getResources().getInteger(R.integer.db_version);
         private static final  String mCreateTableSQL ="create table if not exists " +  mTableName
                 + " (" +  mTableColumns[0] +  " integer primary key autoincrement, "
-                + mTableColumns[1]  + " TEXT );";
+                + mTableColumns[1]  + " TEXT,"
+                + mTableColumns[2]  + " TEXT,"
+                + mTableColumns[3]  + " TEXT);";
 
         private DBhelper(Context context)
         {
@@ -206,7 +229,7 @@ public class DB
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
         {
-                db.execSQL("Drop table if exist "+mTableName);
+                db.execSQL("Drop table if exists "+mTableName);
                 onCreate(db);
         }
     }

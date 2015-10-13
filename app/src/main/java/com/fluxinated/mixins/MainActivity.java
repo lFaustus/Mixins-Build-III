@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
         return mBottles;
     }
 
-    public boolean CreateLiquor(Object obj)
+    public boolean CreateLiquor(Object... obj)
     {
         return mDB.insert(obj);
     }
@@ -109,9 +109,9 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
         mDB.delete(obj);
     }
 
-    public void RetrieveLiquor(int offset, ArrayList<CardInformation> mCardInformation)
+    public void RetrieveLiquor(int offset, ArrayList<CardInformation> mCardInformation,String args)
     {
-        mDB.select(offset,mCardInformation);
+        mDB.select(offset,mCardInformation,args);
     }
 
    /* public void LoadImage(String ImageURI,String name ,ImageView img)

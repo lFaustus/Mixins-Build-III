@@ -12,6 +12,7 @@
 
 
     <LinearLayout
+        android:id="@+id/mix_liquor_sidebar"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:orientation="vertical"

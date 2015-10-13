@@ -14,15 +14,18 @@ import java.util.Random;
  */
 public class GenerateTiles
 {
-    private static int mCurrentTileType = -1;
+    //private static int mCurrentTileType = -1;
+    private int mCurrentTileType = -1;
     public static final int SMALL_TILE = 0;
     public static final int LONG_TILE = 1;
     public static final int BIG_TILE = 2;
     private  ArrayList<CardInformation> cardInformations;
-    private static boolean BigTile = false;
-    private static int mExpectedTileType = -1;
+    private boolean BigTile = false;
+    //private static int mExpectedTileType = -1;
+    private  int mExpectedTileType = -1;
     private String[] materialPalette;
-    public static int counter = 0;
+    //public static int counter = 0;
+    public int counter = 0;
     private Activity mActivity;
     private static int mDBOffset = 0;
 
@@ -32,19 +35,19 @@ public class GenerateTiles
        this.cardInformations = cardInformations;
        mActivity = activity;
        //materialPalette = activity.getResources().getStringArray(R.array.material_palette);
-       if(this.cardInformations.size() == 0)
+       /*if(this.cardInformations.size() == 0)
        {
            counter = 0;
            mCurrentTileType = -1;
            mExpectedTileType = -1;
-       }
+       }*/
 
    }
-    public void fetch()
+    public void fetch(String args)
     {
         mDBOffset = cardInformations.size();
         Log.i("OFFSET SIZE", mDBOffset + "");
-        ((MainActivity)mActivity).RetrieveLiquor(mDBOffset, this.cardInformations);
+        ((MainActivity)mActivity).RetrieveLiquor(mDBOffset, this.cardInformations,args);
         RandomTileSize(this.cardInformations);
 
     }

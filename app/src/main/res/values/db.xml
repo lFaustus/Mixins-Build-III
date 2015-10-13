@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="db_version">1</integer>
+    <integer name="db_version">5</integer>
     <string name="db_table">Liquorlist</string>
     <string-array name="db_columns">
         <item>id_</item>
+        <item>Name</item>
+        <item>Description</item>
         <item>JSONLiquor</item>
     </string-array>
 </resources>

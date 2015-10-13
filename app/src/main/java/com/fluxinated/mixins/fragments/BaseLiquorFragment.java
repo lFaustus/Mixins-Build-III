@@ -1,5 +1,6 @@
 package com.fluxinated.mixins.fragments;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -25,7 +26,7 @@ public abstract class BaseLiquorFragment extends Fragment implements View.OnClic
     public static final String FRAGMENT_KEY = "FragmentKey";
     protected final static String BOTTLE_VOLUME = "VOLUME";
     protected String mParam;
-
+    protected AlertDialog.Builder mDialog = null;
 
     protected Map<Bottle, TextView> mTextViewSeekBarValue = Collections.synchronizedMap(new HashMap<>());
     protected Map<String, String> mOrder = Collections.synchronizedMap(new LinkedHashMap<>());

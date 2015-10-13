@@ -26,6 +26,7 @@ public class TransitionAnimator
     private int mDelay = DEFAULT_DELAY;
     private Interpolator mInterpolator;
     private ArrayList<PropertyValuesHolder> mPropertyValuesHolder = new ArrayList<>();
+    private Animator.AnimatorListener mAnimationListener;
 
     public TransitionAnimator()
     {
@@ -84,7 +85,7 @@ public class TransitionAnimator
 
     public TransitionAnimator setAlpha(int value)
     {
-        this.setProperties(View.ALPHA,value);
+        this.setProperties(View.ALPHA, value);
         return this;
     }
 
@@ -114,7 +115,7 @@ public class TransitionAnimator
 
     public TransitionAnimator setAnimationListener(Animator.AnimatorListener animatorListener)
     {
-        this.mObjectAnimator.addListener(animatorListener);
+        this.mAnimationListener = animatorListener;
         return this;
     }
 
@@ -132,12 +133,15 @@ public class TransitionAnimator
     }
 
 
+
     public TransitionAnimator animate()
     {
         this.mObjectAnimator = ObjectAnimator.ofPropertyValuesHolder(this.mView,  this.mPropertyValuesHolder.toArray(new PropertyValuesHolder[mPropertyValuesHolder.size()]));
         this.mObjectAnimator.setInterpolator(this.mInterpolator);
         this.mObjectAnimator.setDuration(this.mAnimationDuration);
         this.mObjectAnimator.setStartDelay(this.mDelay);
+        if(this.mAnimationListener != null)
+            this.mObjectAnimator.addListener(this.mAnimationListener);
         this.mObjectAnimator.start();
         return this;
     }

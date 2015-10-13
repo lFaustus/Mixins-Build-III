@@ -42,7 +42,6 @@ public class MixLiquor extends BaseLiquorFragment
     protected JSONArray mJSONArrayLiquorOrder;
     protected Liquor mLiquor;
     protected int mCounter = 0;
-    protected AlertDialog.Builder mDialog = null;
     protected String mImageLocation,mLiquorName,mLiquorDescription;
     protected int mLiquorID;
     protected CircleImageView imgView;
@@ -302,7 +301,7 @@ public class MixLiquor extends BaseLiquorFragment
                                         mJSONObjectLiquor.put(Liquor.JSONDB_LIQUOR_DESCRIPTION, mLiquorDescription);
 
                                         MixLiquor.this.mTextView.setText(mLiquorName);
-                                        if (((MainActivity) getActivity()).CreateLiquor(mJSONObjectLiquor))
+                                        if (((MainActivity) getActivity()).CreateLiquor(mLiquorName,mLiquorDescription,mJSONObjectLiquor))
                                             Toast.makeText(getActivity(), "mixture successfully added", Toast.LENGTH_SHORT).show();
                                         else
                                             Toast.makeText(getActivity(), "Failed to add mixture! Please try again", Toast.LENGTH_SHORT).show();

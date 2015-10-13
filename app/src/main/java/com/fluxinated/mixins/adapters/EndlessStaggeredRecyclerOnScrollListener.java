@@ -64,8 +64,11 @@ public class EndlessStaggeredRecyclerOnScrollListener extends RecyclerView.OnScr
             current_page++;
             Log.e("Current Page",current_page+"");
             isLoading = true;
+
             if(mLoadCallback != null)
                mLoadCallback.OnLoadMore(current_page);
+            /*else
+                Log.e("endlessloadcallback","is null");*/
         }
         /*if((VisibleItemCount + firstVisibleItem) >= totalItemCount)
         {

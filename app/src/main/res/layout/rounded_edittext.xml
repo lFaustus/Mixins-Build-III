@@ -9,10 +9,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:hint="Hint"
-    android:inputType="textMultiLine"
+    android:inputType="textLongMessage|textCapWords"
     android:ems="10"
     android:background="@drawable/edittext_custom"
     android:gravity="start"
+    android:maxLines="2"
+    android:minLines="1"
 
     />
 
