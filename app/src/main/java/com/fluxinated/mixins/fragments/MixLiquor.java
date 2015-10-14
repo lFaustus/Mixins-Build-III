@@ -48,6 +48,7 @@ public class MixLiquor extends BaseLiquorFragment
     protected TextView mTextView;
     protected boolean isAvailable = true;
     protected Button mMixButton;
+    protected Button mAddButton;
 
 
     public MixLiquor(){}
@@ -64,7 +65,7 @@ public class MixLiquor extends BaseLiquorFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.mix_drinks_ui,container,false);
+        View view = inflater.inflate(R.layout.mix_drinks_ui_new,container,false);
         imgView = (CircleImageView)view.findViewById(R.id.liquor_image);
         mTextView = (TextView)view.findViewById(R.id.liquor_name);
         return view;
@@ -73,14 +74,17 @@ public class MixLiquor extends BaseLiquorFragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mMixButton = ((Button)getView().findViewById(R.id.mix_button_drinks));
+       // mMixButton = ((Button)getView().findViewById(R.id.mix_button_drinks));
 
         /* Checks if the liquor order array is not zero(if there's one or more ingredient has choosen)
          * or when at "adjust liquor volume", if one or more ingredients doesn't match up with universal current bottle
          * settings the mix button will be disabled
          */
         if(mOrder.values().size() == 0)
+        {
             mMixButton.setEnabled(false);
+            mAddButton.setEnabled(false);
+        }
 
 
     }
@@ -153,6 +157,19 @@ public class MixLiquor extends BaseLiquorFragment
                         }
 
                     }
+                    else if(vg.getChildAt(i) instanceof Button)
+                    {
+                        if(vg.getChildAt(i).getId() == R.id.mix_button_drinks)
+                        {
+                            mMixButton = (Button) vg.getChildAt(i);
+                            mMixButton.setOnClickListener(this);
+                        }
+                        else if(vg.getChildAt(i).getId() == R.id.add_button_drinks)
+                        {
+                            mAddButton = (Button) vg.getChildAt(i);
+                            mAddButton.setOnClickListener(this);
+                        }
+                    }
                     else
                     {
                         vg.getChildAt(i).setOnClickListener(this);
@@ -204,7 +221,7 @@ public class MixLiquor extends BaseLiquorFragment
             default:
                 if (!(v instanceof ImageView))
                 {
-                    View mView = LayoutInflater.from(getActivity()).inflate(R.layout.bottle_settings, null);
+                    View mView = LayoutInflater.from(getActivity()).inflate(R.layout.adjust_liquor_bottle_settings_dialog, null);
                     EditText mEditText = (EditText) mView.findViewById(R.id.liquor_name_settings);
                     TextView mTextView = (TextView) mView.findViewById(R.id.liquor_reminder);
                     //mTextView.setOnClickListener(v1 -> mEditText.setText(((LiquorTag) v.getTag()).getPresentLiquor()));
@@ -392,11 +409,25 @@ public class MixLiquor extends BaseLiquorFragment
              * the liquor order array size has changed but not zero, the button doesn't
              * need to be enabled and redraw again
              */
-            if(mOrder.values().size() != 0 && !mMixButton.isEnabled()) {
+           /* if(mOrder.values().size() != 0 && !mMixButton.isEnabled() ) {
                 mMixButton.setEnabled(true);
-            }
+            }*/
             if(mOrder.values().size() == 0)
+            {
                 mMixButton.setEnabled(false);
+                mAddButton.setEnabled(false);
+            }
+            else
+            {
+                // this condition is needed because at adjust liquor if all ingredients
+                // of selected liquor are not present or equal to current setup of ingredients
+                // then the mix button is disabled
+                if(!mMixButton.isEnabled())
+                    mMixButton.setEnabled(true);
+
+                mAddButton.setEnabled(true);
+            }
+
 
             //mJSONArrayLiquorOrder = new JSONArray(mOrder.values());
 

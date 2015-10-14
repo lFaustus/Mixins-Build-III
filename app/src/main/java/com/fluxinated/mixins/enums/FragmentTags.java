@@ -7,7 +7,8 @@ public enum FragmentTags {
 
     LiquorList("LiquorList"),
     MixLiquor("MixLiquor"),
-    ADJUSTLIQUOR("AdjustLiquor");
+    ADJUSTLIQUOR("AdjustLiquor"),
+    SETTINGS("Settings");
     private String TAG;
 
     FragmentTags(String t)

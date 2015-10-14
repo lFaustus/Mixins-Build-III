@@ -149,13 +149,19 @@ public class AdjustLiquorVolume extends MixLiquor
                     if (vg.getChildAt(i) instanceof com.fluxinated.mixins.floatingactionbuttons.shell.fab.ActionButton || vg.getChildAt(i) instanceof Button || vg.getChildAt(i) instanceof ImageView)
                     {
                         vg.getChildAt(i).setOnClickListener(this);
-                        if (vg.getChildAt(i).getId() == R.id.add_button_drinks)
-                            ((Button) vg.getChildAt(i)).setText("Update");
+                        if (vg.getChildAt(i).getId() == R.id.add_button_drinks) {
+                            mAddButton = ((Button) vg.getChildAt(i));
+                            mAddButton.setText("Update");
+                        }
+                        else if(vg.getChildAt(i).getId() == R.id.mix_button_drinks) {
+                            mMixButton = (Button) vg.getChildAt(i);
+                        }
                         else if (vg.getChildAt(i) instanceof ImageView)
                         {
                             if (super.mImageLocation != null)
                                 ((MainActivity) getActivity()).getImageLoader().DisplayImage(super.mLiquor.getLiquorPictureURI(), super.mLiquor.getLiquorName(), (ImageView) vg.getChildAt(i));
                         }
+
                     } else if (vg.getChildAt(i) instanceof CircularSeekBar)
                     {
 
@@ -229,6 +235,7 @@ public class AdjustLiquorVolume extends MixLiquor
                     } else
                     {
                         vg.getChildAt(i).setOnClickListener(this);
+
                     }
 
                 }
@@ -412,11 +419,10 @@ public class AdjustLiquorVolume extends MixLiquor
 
                                                 mJSONObjectLiquor.put(map.getKey(), map.getValue());
                                                 //mOrder.put(map.getKey(), getResources().getString(R.string.liquor_availability));
-                                                mInActivatedSeekbars_sanitation.put(map.getKey(), map.getKey());
+                                                //mInActivatedSeekbars_sanitation.put(map.getKey(), map.getKey());
                                             }
                                         } else
                                         {
-                                            Log.e("getValue", map.getValue());
                                             mJSONObjectLiquor.put(map.getKey(), map.getValue());
                                             /*if (!map.getKey().contains(BOTTLE_VOLUME))
                                             {
@@ -429,7 +435,6 @@ public class AdjustLiquorVolume extends MixLiquor
                                             }*/
                                         }
                                     }
-
                                 }
 
 
@@ -451,7 +456,7 @@ public class AdjustLiquorVolume extends MixLiquor
                                             //BOTTLE
                                             mOrderCopy.remove(mInActivatedSeekbars_sanitation.get(entry.getKey()).replace(BOTTLE_VOLUME, ""));
                                             //BOTTLEVOLUME
-                                            mOrderCopy.remove(mInActivatedSeekbars_sanitation.get(entry.getKey()));
+                                            mOrderCopy.remove(mInActivatedSeekbars_sanitation.get(entry.getKey())+BOTTLE_VOLUME);
 
                                         }
                                     }
@@ -509,47 +514,38 @@ public class AdjustLiquorVolume extends MixLiquor
 
 
                             Bottle b = ((LiquorTag) mTextView.getTag()).getBottle();
-                            //mTextView.setTextColor(getResources().getColor(R.color.fab_material_red_500));
-                            //triggeredView.setEnabled(false);
 
                             filter(((MainActivity) getActivity()).getCurrentBottleSettings(), mTextView, mCircularSeekBar.get(b));
-                            if (!mCircularSeekBar.get(b).isEnabled())
+                            if (!mCircularSeekBar.get(b).isEnabled()) {
                                 mInActivatedSeekbars_sanitation.put(b.name(), b.name());
+                            }
                             else
                             {
                                 mInActivatedSeekbars_sanitation.remove(b.name());
-                                if (mCircularSeekBar.get(b).getProgress() != 0)
+
+                                if (mCircularSeekBar.get(b).getProgress() != 0) {
                                     mOrder.put(b.name() + BOTTLE_VOLUME, String.valueOf(mCircularSeekBar.get(b).getProgress()));
+
+                                }
                             }
-
-                            //Log.e("isEnabled?",mCircularSeekBar.get(b).isEnabled()+"");
-
-                            /*Predicate<Integer> n = new Predicate<Integer>()
-                            {
-                                @Override
-                                public boolean apply(Integer integer)
-                                {
-                                    return false;
-                                }
-                            }*/
-                            /*if (mCircularSeekBar.get(b).isEnabled())
-                            {
-                                if (mCircularSeekBar.get(b).getProgress() != 0)
-                                {
-
-                                }
-
-                            } else
-                            {
-                                mOrder.remove(b.name());
-                                mCurrentBottleSettings.remove(b);
-                                mJSONArrayLiquorOrder = new JSONArray(mOrder.values());
-                            }*/
 
 
                             mCurrentBottleSettings.put(b, mTextView.getText().toString());
-                            //Log.e("isAvailable", isAvailable + "");
-                            //mMixButton.setEnabled(isAvailable);
+                            //mOrder.size() needs to be divided by 2 since the contents of it are
+                            //bottle name and bottle volume and since inactivate seekbars list contains only
+                            // the bottle name
+                            if(mInActivatedSeekbars_sanitation.size() == (mOrder.size()/2) && mMixButton.isEnabled()) {
+                                    mMixButton.setEnabled(false);
+                            }
+                            else
+                            {
+                                if(mCircularSeekBar.get(b).isEnabled() && !mMixButton.isEnabled()) {
+                                    mMixButton.setEnabled(true);
+                                    Log.e("sadad","asdasd");
+                                }
+                            }
+
+
                             mDialog = null;
 
 
@@ -565,8 +561,6 @@ public class AdjustLiquorVolume extends MixLiquor
 
             if(triggeredView.getId() == View.NO_ID)
             {
-                //((EditText) extra[0]).setHint("Enter Name - (currently available Liquor - "+((LiquorTag) triggeredView.getTag()).getPresentLiquor() + " )");
-
                 extra[1].setVisibility(View.VISIBLE);
                 ((TextView) extra[1]).setText("available liquor for this " + numbersuffix(Integer.parseInt(((LiquorTag) triggeredView.getTag()).getBottle().name().replace("BOTTLE", ""))) + " dispenser  - " + ((LiquorTag) triggeredView.getTag()).getPresentLiquor());
 
@@ -597,12 +591,10 @@ public class AdjustLiquorVolume extends MixLiquor
     {
         TextView mTempTextView = ((TextView) obj[0]);
         CircularSeekBar mTempCircularSeekBar = ((CircularSeekBar) obj[1]);
-        Bottle b = (Bottle) mTempCircularSeekBar.getTag(); //same as mTempTextView
-        //mTempTextView.setTextColor(getResources().getColor(R.color.fab_material_red_500));
+        Bottle b = (Bottle) mTempCircularSeekBar.getTag(); //same as mTempTextView tag
         mTempTextView.setActivated(false);
         mTextViewSeekBarValue.get(b).setActivated(false);
-
-
+        isAvailable = true;
 
         for(Iterator<Map.Entry<Bottle,String>> it = list.entrySet().iterator();it.hasNext();)
         {
@@ -622,27 +614,19 @@ public class AdjustLiquorVolume extends MixLiquor
                 }
                 else
                 {
-                    //Log.e("entry key",entry.getKey() + " == " + b.name());
-                   // Log.e("entry value", entry.getValue() + "==" + mTempTextView.getText().toString());
 
-                    //if()
                     if(entry.getKey().name().equals(b.name()))
                     {
-                        Log.e("filter",entry.getValue());
-                        //mTempTextView.setTextColor(getResources().getColor(R.color.material_lightpurple));
                         isAvailable = true;
                         mTempTextView.setActivated(isAvailable);
-                       // ((LiquorTag)mTempTextView.getTag()).setPresentLiquor(entry.getValue());
                         mTextViewSeekBarValue.get(b).setActivated(isAvailable);
 
                         break;
                     }
                     else
                     {
-                        //Log.e("false","false");
                         isAvailable = false;
                     }
-                    // triggeredView.setEnabled(true);
                 }
             }
             else
@@ -653,32 +637,6 @@ public class AdjustLiquorVolume extends MixLiquor
 
         }
         mTempCircularSeekBar.setEnabled(isAvailable);
-
-        /*for (String s : list)
-        {
-            //Log.e("string", s);
-            if (!mTempTextView.getText().toString().equalsIgnoreCase(getResources().getString(R.string.liquor_label_default_value))
-                    )
-            {
-                if (!s.equalsIgnoreCase(mTempTextView.getText().toString()))
-                {
-                    //((TextView)obj[0]).setTextColor(getResources().getColor(R.color.fab_material_red_500));
-                    isAvailable = false;
-                    continue;
-                } else
-                {
-                    mTempTextView.setTextColor(getResources().getColor(R.color.material_lightpurple));
-                    // triggeredView.setEnabled(true);
-                    isAvailable = true;
-                    break;
-                }
-            } else
-            {
-                isAvailable = false;
-            }
-        }
-        mTempCircularSeekBar.setEnabled(isAvailable);*/
-
     }
 
     private String numbersuffix(int number)

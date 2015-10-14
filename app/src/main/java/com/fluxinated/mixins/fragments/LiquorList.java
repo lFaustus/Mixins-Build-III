@@ -1,6 +1,9 @@
 package com.fluxinated.mixins.fragments;
 
 import android.animation.Animator;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -16,6 +19,8 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fluxinated.mixins.MainActivity;
@@ -24,14 +29,27 @@ import com.fluxinated.mixins.adapters.EndlessStaggeredRecyclerOnScrollListener;
 import com.fluxinated.mixins.adapters.StaggeredRecyclerAdapter;
 import com.fluxinated.mixins.animation.TransitionAnimator;
 import com.fluxinated.mixins.database.GenerateTiles;
+import com.fluxinated.mixins.enums.Bottle;
 import com.fluxinated.mixins.enums.FragmentTags;
 import com.fluxinated.mixins.floatingactionbuttons.floatingactionbutton.FloatingActionButton;
 import com.fluxinated.mixins.floatingactionbuttons.floatingactionbutton.FloatingActionsMenu;
 import com.fluxinated.mixins.model.CardInformation;
+import com.fluxinated.mixins.model.Liquor;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import static android.animation.Animator.AnimatorListener;
+import static com.fluxinated.mixins.enums.Bottle.BOTTLE1;
 
 /**
  * Created by User on 08/10/2015.
@@ -46,12 +64,14 @@ public class LiquorList extends BaseLiquorFragment implements EndlessStaggeredRe
     private GenerateTiles mGenerateTiles;
     private EndlessStaggeredRecyclerOnScrollListener mEndlessStaggeredRecyclerOnScrollListener;
     private TransitionAnimator mTransitionAnimatorFloatingActionButton,mTransitionAnimatorSearchView;
+    private Map<String,View> mBottleSettingsFields;
     private FloatingActionsMenu mFloatingActionsMenu;
     private CardView mSearchView;
     private EditText mSearchField;
     private Button mSearchCloseButton;
     private AnimatorListener mTransitionAnimationListener;
     private LoadMoreTask mLoadMore;
+    private LinearLayout mtoggleSettingsLayout;
     //private boolean isSearchViewToggled = false;
     private TextWatcher mSearchViewListener = new TextWatcher()
     {
@@ -393,7 +413,8 @@ public class LiquorList extends BaseLiquorFragment implements EndlessStaggeredRe
                 break;
 
             case R.id.floating_side_button_3:
-                Toast.makeText(getActivity(), "Settings", Toast.LENGTH_SHORT).show();
+                //((MainActivity)getActivity()).OnFragmentChange(FragmentTags.SETTINGS, null);
+                toggleSettings();
                 break;
 
             case R.id.search_close_btn:
@@ -407,6 +428,87 @@ public class LiquorList extends BaseLiquorFragment implements EndlessStaggeredRe
                 break;
         }
     }
+    public int generateId(Bottle b)
+    {
+        switch(b)
+        {
+            case BOTTLE1:
+                return R.id.BOTTLE1;
+            case BOTTLE2:
+                return R.id.BOTTLE2;
+            case BOTTLE3:
+                return R.id.BOTTLE3;
+            case BOTTLE4:
+                return R.id.BOTTLE4;
+            case BOTTLE5:
+                return R.id.BOTTLE5;
+            default:
+                return R.id.BOTTLE6;
+        }
+    }
+    private void toggleSettings()
+    {
+        if(mDialog == null)
+        {
+
+            mDialog = new AlertDialog.Builder(getActivity());
+            AlertDialog al = mDialog.create();
+
+
+            //LinearLayout.LayoutParams mLayoutParams = (LinearLayout.LayoutParams)layout.getLayoutParams();
+            //mLayoutParams.width =
+
+
+            if(mBottleSettingsFields == null && mtoggleSettingsLayout == null) {
+
+                mtoggleSettingsLayout = new LinearLayout(getActivity());
+                mtoggleSettingsLayout.setOrientation(LinearLayout.VERTICAL);
+                mBottleSettingsFields = Collections.synchronizedMap(new LinkedHashMap<String, View>());
+
+                View layout;
+                EditText mEditText;
+
+                for (Bottle b : Bottle.values()) {
+                    layout = LayoutInflater.from(getActivity()).inflate(R.layout.bottle_settings, null);
+                    mEditText = ((EditText) layout.findViewById(R.id.liquor_name_settings));
+                    mEditText.setId(generateId(b));
+                    mEditText.setHint("Enter Bottle Name");
+                    mBottleSettingsFields.put(b.name(), mEditText);
+                    mEditText = ((EditText) layout.findViewById(R.id.liquor_name_settings));
+                    mEditText.setId(generateId(b));
+                    mEditText.setHint("Set Maximum Volume");
+                    mBottleSettingsFields.put(b.name() + BOTTLE_VOLUME, mEditText);
+                    mtoggleSettingsLayout.addView(layout);
+                    break;
+                }
+            }
+            //al.setView(LayoutInflater.from(getActivity()).inflate(R.layout.liquor_information_dialog_big,null));
+            al.setView(mtoggleSettingsLayout);
+            al.setCancelable(true);
+
+            al.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+
+            al.setButton(DialogInterface.BUTTON_POSITIVE, "Save", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            al.show();
+           /* WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+            lp.copyFrom(al.getWindow().getAttributes());
+            lp.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300, getActivity().getResources().getDisplayMetrics());
+            al.getWindow().setAttributes(lp);*/
+
+        }
+
+    }
+
 
 
 }
