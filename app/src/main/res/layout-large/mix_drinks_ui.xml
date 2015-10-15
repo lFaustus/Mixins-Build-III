@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:fab="http://schemas.android.com/apk/res-auto"
+              xmlns:circularimageview="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              xmlns:circulariamgeview="http://schemas.android.com/tools"
+              android:background="#fff"
+              android:orientation="horizontal"
+              android:paddingStart="5dp">
+
+
+    <LinearLayout
+        android:id="@+id/mix_liquor_sidebar"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:gravity="center"
+        >
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="10dp"
+            android:orientation="vertical"
+            android:layout_marginTop="-100dp"
+            >
+
+            <LinearLayout
+                android:id="@+id/liquor_image_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+                <!--View
+                    android:layout_width="10dp"
+                    android:layout_height="match_parent"
+                    android:background="#FF5252"/>
+
+                <ImageView
+                    android:id="@+id/liquor_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:fitsSystemWindows="true"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/hello"/-->
+                <com.fluxinated.mixins.customviews.CircleImageView
+                    android:id="@+id/liquor_image"
+                    android:layout_width="200dp"
+                    android:fitsSystemWindows="true"
+                    android:layout_height="200dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/hello"/>
+                <com.fluxinated.mixins.customviews.PlayFontTextView
+                    android:id="@+id/liquor_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/material_lightpurple"
+                    android:text="@null"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="30dp">
+
+            <com.fluxinated.mixins.customviews.PlayFontButton
+                android:id="@+id/add_button_drinks"
+                style="@style/add_drinks_ui_button"
+                android:text="Add to Menu"
+                android:textColor="@color/red_button_textcolor_selector"
+                android:layout_marginLeft="2dp"
+                android:layout_marginStart="2dp"
+                android:layout_weight="1"
+                />
+
+                <com.fluxinated.mixins.customviews.PlayFontButton
+                    android:id="@+id/mix_button_drinks"
+                    style="@style/mix_drinks_ui_button"
+                    android:text="Mix"
+                    android:textColor="@color/orange_button_textcolor_selector"
+                    android:layout_marginStart="2dp"
+                    android:layout_weight="1"
+                    />
+
+            </LinearLayout>
+
+
+            <!--FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/liquor_image_layout"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="-35dp">
+
+            <com.software.shell.fab.ActionButton
+                android:id="@+id/liquor_image_select"
+                style="@style/fab_action_button_style"
+
+
+                android:layout_marginEnd="@dimen/fab_button_margin_right"
+                android:layout_marginRight="@dimen/fab_button_margin_right"
+                fab:button_color="#B29c27b0"
+                fab:image="@drawable/ic_action_camera"
+                fab:image_size="30dp"
+                fab:shadow_radius="3dp"
+                fab:shadow_xOffset="2dp"
+                fab:shadow_yOffset="2.5dp"
+                fab:type="DEFAULT"/>
+            </FrameLayout-->
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/viewgroup_circularseekbar"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:baselineAligned="false"
+        android:gravity="center"
+        android:tag="viewgroup_circularseekbar"
+        android:layout_weight="2"
+        android:orientation="horizontal"
+        >
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <com.fluxinated.mixins.customviews.CircularSeekBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:circle_color="@color/material_gray"
+                    app:circle_progress_color="@color/material_lightblue"
+                    app:circle_stroke_width="8"
+                    app:circle_x_radius="110"
+                    app:circle_y_radius="110"
+                    app:end_angle="60"
+                    app:lock_enabled="true"
+                    app:max="200"
+                    app:move_outside_circle="true"
+                    app:pointer_alpha_ontouch="100"
+                    app:pointer_color="#0174DF"
+                    app:pointer_halo_color="#880174DF"
+                    app:start_angle="120"
+                    app:use_custom_radii="true"
+                    />
+
+                <com.fluxinated.mixins.customviews.PlayFontTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:tag="measurement"
+                    android:text="0ml"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/material_lightblue_button_textcolor_selector"
+                    android:textSize="30sp"
+                    />
+            </FrameLayout>
+
+
+                <com.fluxinated.mixins.customviews.PlayFontTextView
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:clickable="true"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:textColor="@color/material_lightblue_button_textcolor_selector"
+                    android:textSize="20sp"
+                    android:gravity="center|center_horizontal"
+                    />
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                >
+
+                <com.fluxinated.mixins.customviews.CircularSeekBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:circle_color="@color/material_gray"
+                    app:circle_progress_color="@color/material_lightblue"
+                    app:circle_stroke_width="8"
+                    app:circle_x_radius="110"
+                    app:circle_y_radius="110"
+                    app:end_angle="60"
+                    app:lock_enabled="true"
+                    app:max="200"
+                    app:pointer_alpha_ontouch="100"
+                    app:pointer_color="#0174DF"
+                    app:pointer_halo_color="#880174DF"
+                    app:start_angle="120"
+                    app:use_custom_radii="true"
+                    />
+
+                <com.fluxinated.mixins.customviews.PlayFontTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:tag="measurement"
+                    android:text="0ml"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/material_lightblue_button_textcolor_selector"
+                    android:textSize="30sp"
+                    />
+            </FrameLayout>
+                <com.fluxinated.mixins.customviews.PlayFontTextView
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:clickable="true"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:gravity="center|center_horizontal"
+                    android:textColor="@color/material_lightblue_button_textcolor_selector"
+                    android:textSize="20sp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <com.fluxinated.mixins.customviews.CircularSeekBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:circle_color="@color/material_gray"
+                        app:circle_progress_color="@color/material_lightblue"
+                        app:circle_stroke_width="8"
+                        app:circle_x_radius="110"
+                        app:circle_y_radius="110"
+                        app:end_angle="60"
+                        app:lock_enabled="true"
+                        app:max="200"
+                        app:move_outside_circle="true"
+                        app:pointer_alpha_ontouch="100"
+                        app:pointer_color="#0174DF"
+                        app:pointer_halo_color="#880174DF"
+                        app:start_angle="120"
+                        app:use_custom_radii="true"
+                        />
+
+                    <com.fluxinated.mixins.customviews.PlayFontTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:tag="measurement"
+                        android:text="0ml"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/material_lightblue_button_textcolor_selector"
+                        android:textSize="30sp"/>
+                </FrameLayout>
+
+
+                <com.fluxinated.mixins.customviews.PlayFontTextView
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:clickable="true"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:gravity="center|center_horizontal"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:textColor="@color/material_lightblue_button_textcolor_selector"
+                    android:textSize="20sp"/>
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    >
+
+                    <com.fluxinated.mixins.customviews.CircularSeekBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:circle_color="@color/material_gray"
+                        app:circle_progress_color="@color/material_lightblue"
+                        app:circle_stroke_width="8"
+                        app:circle_x_radius="110"
+                        app:circle_y_radius="110"
+                        app:end_angle="60"
+                        app:lock_enabled="true"
+                        app:max="200"
+                        app:pointer_alpha_ontouch="100"
+                        app:pointer_color="#0174DF"
+                        app:pointer_halo_color="#880174DF"
+                        app:start_angle="120"
+                        app:use_custom_radii="true"
+                        />
+
+                    <com.fluxinated.mixins.customviews.PlayFontTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:tag="measurement"
+                        android:text="0ml"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/material_lightblue_button_textcolor_selector"
+                        android:textSize="30sp"
+                        />
+                </FrameLayout>
+                <com.fluxinated.mixins.customviews.PlayFontTextView
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:clickable="true"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:gravity="center|center_horizontal"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:textColor="@color/material_lightblue_button_textcolor_selector"
+                    android:textSize="20sp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <com.fluxinated.mixins.customviews.CircularSeekBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:circle_color="@color/material_gray"
+                        app:circle_progress_color="@color/material_lightblue"
+                        app:circle_stroke_width="8"
+                        app:circle_x_radius="110"
+                        app:circle_y_radius="110"
+                        app:end_angle="60"
+                        app:lock_enabled="true"
+                        app:max="200"
+                        app:move_outside_circle="true"
+                        app:pointer_alpha_ontouch="100"
+                        app:pointer_color="#0174DF"
+                        app:pointer_halo_color="#880174DF"
+                        app:start_angle="120"
+                        app:use_custom_radii="true"
+                        />
+
+                    <com.fluxinated.mixins.customviews.PlayFontTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:tag="measurement"
+                        android:text="0ml"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/material_lightblue_button_textcolor_selector"
+                        android:textSize="30sp"/>
+                </FrameLayout>
+
+
+                <com.fluxinated.mixins.customviews.PlayFontTextView
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:clickable="true"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:gravity="center|center_horizontal"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:textColor="@color/material_lightblue_button_textcolor_selector"
+                    android:textSize="20sp"/>
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    >
+
+                    <com.fluxinated.mixins.customviews.CircularSeekBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:circle_color="@color/material_gray"
+                        app:circle_progress_color="@color/material_lightblue"
+                        app:circle_stroke_width="8"
+                        app:circle_x_radius="110"
+                        app:circle_y_radius="110"
+                        app:end_angle="60"
+                        app:lock_enabled="true"
+                        app:max="200"
+                        app:pointer_alpha_ontouch="100"
+                        app:pointer_color="#0174DF"
+                        app:pointer_halo_color="#880174DF"
+                        app:start_angle="120"
+                        app:use_custom_radii="true"
+                        />
+
+                    <com.fluxinated.mixins.customviews.PlayFontTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:tag="measurement"
+                        android:text="0ml"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textColor="@color/material_lightblue_button_textcolor_selector"
+                        android:textSize="30sp"
+                        />
+                </FrameLayout>
+                <com.fluxinated.mixins.customviews.PlayFontTextView
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:clickable="true"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:gravity="center|center_horizontal"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:textColor="@color/material_lightblue_button_textcolor_selector"
+                    android:textSize="20sp"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>

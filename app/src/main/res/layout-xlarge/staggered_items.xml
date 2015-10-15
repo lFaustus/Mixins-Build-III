@@ -8,6 +8,8 @@
     android:layout_gravity="center"
     card_view:cardCornerRadius="0dp"
     card_view:cardElevation="3dp"
+    card_view:cardPreventCornerOverlap="true"
+    android:layout_margin="2dp"
     >
 
     <ImageView

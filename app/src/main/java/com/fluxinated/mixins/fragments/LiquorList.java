@@ -3,7 +3,7 @@ package com.fluxinated.mixins.fragments;
 import android.animation.Animator;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -11,7 +11,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +22,6 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fluxinated.mixins.MainActivity;
@@ -34,22 +35,14 @@ import com.fluxinated.mixins.enums.FragmentTags;
 import com.fluxinated.mixins.floatingactionbuttons.floatingactionbutton.FloatingActionButton;
 import com.fluxinated.mixins.floatingactionbuttons.floatingactionbutton.FloatingActionsMenu;
 import com.fluxinated.mixins.model.CardInformation;
-import com.fluxinated.mixins.model.Liquor;
+import com.fluxinated.mixins.tools.ScreenProperties;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import static android.animation.Animator.AnimatorListener;
-import static com.fluxinated.mixins.enums.Bottle.BOTTLE1;
 
 /**
  * Created by User on 08/10/2015.
@@ -414,7 +407,48 @@ public class LiquorList extends BaseLiquorFragment implements EndlessStaggeredRe
 
             case R.id.floating_side_button_3:
                 //((MainActivity)getActivity()).OnFragmentChange(FragmentTags.SETTINGS, null);
-                toggleSettings();
+               // toggleSettings();
+                //int i = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
+                //Toast.makeText(getActivity(),"value"+String.valueOf(i),Toast.LENGTH_SHORT).show();
+               /* Display display = getActivity().getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getRealSize(size);
+                int width = size.x;
+                int height = size.y;
+                Configuration.SCREENLAYOUT_SIZE_MASK
+                DisplayMetrics.DENSITY_MEDIUM
+                DisplayMetrics metrics = getActivity().getResources().getDisplayMetrics();
+                int width2 = metrics.widthPixels;
+                int height2 = metrics.heightPixels;
+                Toast.makeText(getActivity(), "width:" + width + " " + "width2: "+ width2 + " height: " + height +" height2: "+height2 , Toast.LENGTH_SHORT).show();*/
+                Display display = getActivity().getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getRealSize(size);
+                DisplayMetrics metrics = new DisplayMetrics();
+                //DisplayMetrics metrics = getActivity().getResources().getDisplayMetrics();
+                getActivity().getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+
+                switch(metrics.densityDpi){
+                    case DisplayMetrics.DENSITY_LOW:
+                        Toast.makeText(getActivity(), "DisplayMetrics.DENSITY_LOW", Toast.LENGTH_SHORT).show();
+                        break;
+                    case DisplayMetrics.DENSITY_MEDIUM:
+                        Toast.makeText(getActivity(), "DisplayMetrics.DENSITY_MEDIUM", Toast.LENGTH_SHORT).show();
+                        break;
+                    case DisplayMetrics.DENSITY_HIGH:
+                        Toast.makeText(getActivity(), "DisplayMetrics.DENSITY_HIGH", Toast.LENGTH_SHORT).show();
+                        break;
+                    case DisplayMetrics.DENSITY_XHIGH:
+                        Toast.makeText(getActivity(), "DisplayMetrics.DENSITY_XHIGH", Toast.LENGTH_SHORT).show();
+                        break;
+                    case DisplayMetrics.DENSITY_XXHIGH:
+                        Toast.makeText(getActivity(), "DisplayMetrics.DENSITY_XXHIGH", Toast.LENGTH_SHORT).show();
+                        break;
+                    case DisplayMetrics.DENSITY_XXXHIGH:
+                        Toast.makeText(getActivity(), "DisplayMetrics.DENSITY_XXXHIGH", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                Log.i("Screen Size",new ScreenProperties(getActivity()).getScreenSize().name());
                 break;
 
             case R.id.search_close_btn:
@@ -508,7 +542,4 @@ public class LiquorList extends BaseLiquorFragment implements EndlessStaggeredRe
         }
 
     }
-
-
-
 }

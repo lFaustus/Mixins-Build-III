@@ -6,10 +6,8 @@ import android.content.DialogInterface;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -130,10 +128,10 @@ public class BaseViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                 }
             });
             al.show();
-            WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+            /*WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
             lp.copyFrom(al.getWindow().getAttributes());
             lp.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 400, mActivity.getResources().getDisplayMetrics());
-            al.getWindow().setAttributes(lp);
+            al.getWindow().setAttributes(lp);*/
 
         }
     }

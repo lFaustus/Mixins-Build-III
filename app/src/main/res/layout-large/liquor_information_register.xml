@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="5dp">
+
+<include android:id="@+id/liquor_name_register"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:layout_marginBottom="5dp"
+         layout="@layout/rounded_edittext"
+    />
+
+    <include android:id="@+id/liquor_description_register"
+             android:layout_width="match_parent"
+             android:layout_height="120dp"
+             android:layout_marginBottom="5dp"
+             layout="@layout/rounded_edittext"
+        />
+    <!--EditText
+        android:id="@+id/liquor_name_register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Liquor name"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:background="@drawable/edittext_custom"
+        android:layout_marginBottom="5dp"/-->
+
+
+    <!--EditText
+        android:id="@+id/liquor_description_register"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:hint="Description"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:background="@drawable/edittext_custom"
+        android:gravity="start"
+        android:layout_marginBottom="5dp" /-->
+</LinearLayout>
