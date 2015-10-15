@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:circulariamgeview="http://schemas.android.com/tools"
-    xmlns:circularimageview="http://schemas.android.com/apk/res-auto"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
+              xmlns:grid="http://schemas.android.com/apk/res-auto"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#fff"
@@ -120,7 +118,107 @@
     </LinearLayout>
 
 
-    <LinearLayout
+    <android.support.v7.widget.GridLayout
+
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:circulariamgeview="http://schemas.android.com/tools"
+        xmlns:circularimageview="http://schemas.android.com/apk/res-auto"
+        xmlns:fab="http://schemas.android.com/apk/res-auto"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:tag="viewgroup_circularseekbar"
+        android:layout_gravity="center"
+        android:layout_weight="2"
+        grid:rowCount="2"
+        grid:columnCount="3"
+        grid:useDefaultMargins="true"
+        grid:layout_gravity="center"
+        >
+        <include layout="@layout/circularseekbar"
+                 grid:layout_gravity="fill_horizontal"
+                 grid:layout_columnWeight="1"
+
+                 android:layout_height="wrap_content"
+                 android:layout_width="0dp"/>
+        <include layout="@layout/circularseekbar"
+                 grid:layout_gravity="fill_horizontal"
+                 grid:layout_columnWeight="1"
+
+                 android:layout_height="wrap_content"
+                 android:layout_width="0dp"/>
+        <include layout="@layout/circularseekbar"
+                 grid:layout_gravity="fill_horizontal"
+                 grid:layout_columnWeight="1"
+
+                 android:layout_height="wrap_content"
+                 android:layout_width="0dp"/>
+        <include layout="@layout/circularseekbar"
+                 grid:layout_gravity="fill_horizontal"
+                 grid:layout_columnWeight="1"
+
+                 android:layout_height="wrap_content"
+                 android:layout_width="0dp"/>
+        <include layout="@layout/circularseekbar"
+                 grid:layout_gravity="fill_horizontal"
+                 grid:layout_columnWeight="1"
+
+                 android:layout_height="wrap_content"
+                 android:layout_width="0dp"/>
+        <include layout="@layout/circularseekbar"
+                 grid:layout_gravity="fill_horizontal"
+                 grid:layout_columnWeight="1"
+
+                 android:layout_height="wrap_content"
+                 android:layout_width="0dp"/>
+
+    </android.support.v7.widget.GridLayout>
+    <!--android.support.v7.widget.GridLayout
+        android:id="@+id/viewgroup_circularseekbar"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="2"
+        android:tag="viewgroup_circularseekbar">
+
+
+        <include layout="@layout/circularseekbar"
+                 grid:layout_gravity="fill_horizontal"
+                 grid:layout_columnWeight="1"
+                 grid:layout_rowWeight="1"
+                 android:layout_height="0dp"
+                 android:layout_width="0dp"/>
+        <include layout="@layout/circularseekbar"
+                 grid:layout_gravity="fill_horizontal"
+                 grid:layout_columnWeight="1"
+                 grid:layout_rowWeight="1"
+                 android:layout_height="0dp"
+                 android:layout_width="0dp"/>
+        <include layout="@layout/circularseekbar"
+                 grid:layout_gravity="fill_horizontal"
+                 grid:layout_columnWeight="1"
+                 grid:layout_rowWeight="1"
+                 android:layout_height="0dp"
+                 android:layout_width="0dp"/>
+        <include layout="@layout/circularseekbar"
+                 grid:layout_gravity="fill_horizontal"
+                 grid:layout_columnWeight="1"
+                 grid:layout_rowWeight="1"
+                 android:layout_height="0dp"
+                 android:layout_width="0dp"/>
+        <include layout="@layout/circularseekbar"
+                 grid:layout_gravity="fill_horizontal"
+                 grid:layout_columnWeight="1"
+                 grid:layout_rowWeight="1"
+                 android:layout_height="0dp"
+                 android:layout_width="0dp"/>
+        <include layout="@layout/circularseekbar"
+                 grid:layout_gravity="fill_horizontal"
+                 grid:layout_columnWeight="1"
+                 grid:layout_rowWeight="1"
+                 android:layout_height="0dp"
+                 android:layout_width="0dp"/>
+    </android.support.v7.widget.GridLayout-->
+    <!--LinearLayout
         android:id="@+id/viewgroup_circularseekbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -133,7 +231,7 @@
         <TableRow
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            >
 
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -303,7 +401,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:layout_weight="1">
+            >
 
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -467,7 +565,8 @@
                 </RelativeLayout>
             </LinearLayout>
         </TableRow>
-    </LinearLayout>
+    </LinearLayout-->
+
 
 
 </LinearLayout>

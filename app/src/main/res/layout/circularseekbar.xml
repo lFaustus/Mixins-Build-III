@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.GridLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:grid="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    grid:rowCount="2"
+    grid:columnCount="1"
+    grid:useDefaultMargins="true"
+    >
+
+<FrameLayout
+    android:id="@+id/seekbar_viewgroup_1"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+
+    >
+
+    <com.fluxinated.mixins.customviews.CircularSeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:circle_color="@color/material_gray"
+        app:circle_progress_color="@color/material_lightblue"
+        app:circle_stroke_width="8"
+
+        app:end_angle="60"
+        app:lock_enabled="true"
+        app:max="200"
+        app:move_outside_circle="true"
+        app:pointer_alpha_ontouch="100"
+        app:pointer_color="#0174DF"
+        app:pointer_halo_color="#880174DF"
+        app:start_angle="120"
+         />
+
+    <com.fluxinated.mixins.customviews.PlayFontTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:tag="measurement"
+        android:text="0ml"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/material_lightblue_button_textcolor_selector"
+        android:textSize="30sp" />
+    <!--com.fluxinated.mixins.customviews.PlayFontTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:clickable="true"
+        android:ellipsize="marquee"
+        android:gravity="center"
+
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
+        android:textColor="@color/material_lightblue_button_textcolor_selector"
+        android:textSize="20sp"
+        android:text="sdsd"/-->
+
+</FrameLayout>
+
+    <com.fluxinated.mixins.customviews.PlayFontTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:clickable="true"
+        android:ellipsize="marquee"
+        android:gravity="center"
+
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
+        android:textColor="@color/material_lightblue_button_textcolor_selector"
+        android:textSize="20sp"
+        android:text="sdsd"/>
+</android.support.v7.widget.GridLayout>

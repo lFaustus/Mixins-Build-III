@@ -504,6 +504,7 @@ public class AdjustLiquorVolume extends MixLiquor
                                 Toast.makeText(getActivity(), "Opps Something went wrong", Toast.LENGTH_SHORT).show();
                                 exp.printStackTrace();
                             }
+                            Toast.makeText(getActivity(), mJSONArrayLiquorOrder.toString(), Toast.LENGTH_SHORT).show();
                             break;
 
 
@@ -517,10 +518,12 @@ public class AdjustLiquorVolume extends MixLiquor
 
                             filter(((MainActivity) getActivity()).getCurrentBottleSettings(), mTextView, mCircularSeekBar.get(b));
                             if (!mCircularSeekBar.get(b).isEnabled()) {
+                                Log.e("circular", "not enabled");
                                 mInActivatedSeekbars_sanitation.put(b.name(), b.name());
                             }
                             else
                             {
+                                Log.e("circular", " enabled");
                                 mInActivatedSeekbars_sanitation.remove(b.name());
 
                                 if (mCircularSeekBar.get(b).getProgress() != 0) {
@@ -594,23 +597,37 @@ public class AdjustLiquorVolume extends MixLiquor
         Bottle b = (Bottle) mTempCircularSeekBar.getTag(); //same as mTempTextView tag
         mTempTextView.setActivated(false);
         mTextViewSeekBarValue.get(b).setActivated(false);
-        isAvailable = true;
+       // isAvailable = false;
 
         for(Iterator<Map.Entry<Bottle,String>> it = list.entrySet().iterator();it.hasNext();)
         {
             Map.Entry<Bottle,String> entry = it.next();
-            if(entry.getKey().name().equals(b.name()))
+            if(entry.getKey().name().equalsIgnoreCase(b.name()))
             {
+                //Log.e(" name", "bottle name"+ b.name() +" entry key" + entry.getKey().name());
                 ((LiquorTag)mTempTextView.getTag()).setPresentLiquor(entry.getValue());
+                /*isAvailable = true;
+                mTempTextView.setActivated(isAvailable);
+                mTextViewSeekBarValue.get(b).setActivated(isAvailable);
+                break;*/
             }
+           // else
+               // isAvailable = false;
 
-            if(!mTempTextView.getText().toString().equalsIgnoreCase(getResources().getString(R.string.liquor_label_default_value)))
-            {
+            /*if(!mTempTextView.getText().toString().equalsIgnoreCase(getResources().getString(R.string.liquor_label_default_value)))
+            {*/
                 if(!entry.getValue().equalsIgnoreCase(mTempTextView.getText().toString()))
                 {
-
+                    Log.e(" name", "text value "+ mTempTextView.getText().toString() +" entry key " + entry.getValue());
                     isAvailable = false;
-                    continue;
+
+                    if(!it.hasNext())
+                    {
+                        Log.e(" !has next", "text value "+ mTempTextView.getText().toString() +" entry key " + entry.getValue());
+                        mInActivatedSeekbars_sanitation.put(b.name(), b.name());
+                    }
+
+                    //continue;
                 }
                 else
                 {
@@ -620,7 +637,7 @@ public class AdjustLiquorVolume extends MixLiquor
                         isAvailable = true;
                         mTempTextView.setActivated(isAvailable);
                         mTextViewSeekBarValue.get(b).setActivated(isAvailable);
-
+                        Log.e("equals", isAvailable + "");
                         break;
                     }
                     else
@@ -628,14 +645,15 @@ public class AdjustLiquorVolume extends MixLiquor
                         isAvailable = false;
                     }
                 }
-            }
-            else
+            //}
+            /*else
             {
                 isAvailable = false;
-            }
+            }*/
 
 
         }
+        Log.e(" is available",isAvailable+"");
         mTempCircularSeekBar.setEnabled(isAvailable);
     }
 

@@ -2,13 +2,11 @@ package com.fluxinated.mixins.fragments;
 
 
 import android.os.Bundle;
-import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.fluxinated.mixins.R;
@@ -29,6 +27,11 @@ public class BottleSettings extends MixLiquor {
 
     public BottleSettings() {}
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
+        return inflater.inflate(R.layout.bottle_settings,container,false);
+    }
 
     @Override
     protected void initializeViews(ViewGroup vg) {
@@ -41,16 +44,7 @@ public class BottleSettings extends MixLiquor {
                         vg.getChildAt(i).setVisibility(View.GONE);
                         //continue;
                     }
-                    else if(vg.getChildAt(i).getId() == R.id.viewgroup_circularseekbar)
-                    {
-                        LinearLayout.LayoutParams layoutparams = (LinearLayout.LayoutParams) vg.getChildAt(i).getLayoutParams();
-                        layoutparams.height = LinearLayout.LayoutParams.MATCH_PARENT;
-                        layoutparams.width = LinearLayout.LayoutParams.MATCH_PARENT;
-                        layoutparams.weight = 0;
-                        vg.getChildAt(i).setLayoutParams(layoutparams);
-                        vg.invalidate();
 
-                    }
                     initializeViews((ViewGroup) vg.getChildAt(i));
                 }
                 else {

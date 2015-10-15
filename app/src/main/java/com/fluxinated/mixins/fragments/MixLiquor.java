@@ -80,7 +80,7 @@ public class MixLiquor extends BaseLiquorFragment
          * or when at "adjust liquor volume", if one or more ingredients doesn't match up with universal current bottle
          * settings the mix button will be disabled
          */
-        if(mOrder.values().size() == 0)
+        if(!MixLiquor.this.getClass().equals(BottleSettings.class) && mOrder.values().size() == 0 )
         {
             mMixButton.setEnabled(false);
             mAddButton.setEnabled(false);
@@ -412,20 +412,22 @@ public class MixLiquor extends BaseLiquorFragment
            /* if(mOrder.values().size() != 0 && !mMixButton.isEnabled() ) {
                 mMixButton.setEnabled(true);
             }*/
-            if(mOrder.values().size() == 0)
+            if(!MixLiquor.this.getClass().equals(BottleSettings.class))
             {
-                mMixButton.setEnabled(false);
-                mAddButton.setEnabled(false);
-            }
-            else
-            {
-                // this condition is needed because at adjust liquor if all ingredients
-                // of selected liquor are not present or equal to current setup of ingredients
-                // then the mix button is disabled
-                if(!mMixButton.isEnabled())
-                    mMixButton.setEnabled(true);
+                if (mOrder.values().size() == 0)
+                {
+                    mMixButton.setEnabled(false);
+                    mAddButton.setEnabled(false);
+                } else
+                {
+                    // this condition is needed because at adjust liquor if all ingredients
+                    // of selected liquor are not present or equal to current setup of ingredients
+                    // then the mix button is disabled
+                    if (!mMixButton.isEnabled())
+                        mMixButton.setEnabled(true);
 
-                mAddButton.setEnabled(true);
+                    mAddButton.setEnabled(true);
+                }
             }
 
 

@@ -406,7 +406,7 @@ public class LiquorList extends BaseLiquorFragment implements EndlessStaggeredRe
                 break;
 
             case R.id.floating_side_button_3:
-                //((MainActivity)getActivity()).OnFragmentChange(FragmentTags.SETTINGS, null);
+
                // toggleSettings();
                 //int i = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
                 //Toast.makeText(getActivity(),"value"+String.valueOf(i),Toast.LENGTH_SHORT).show();
@@ -449,6 +449,7 @@ public class LiquorList extends BaseLiquorFragment implements EndlessStaggeredRe
                         break;
                 }
                 Log.i("Screen Size",new ScreenProperties(getActivity()).getScreenSize().name());
+                //((MainActivity)getActivity()).OnFragmentChange(FragmentTags.SETTINGS, null);
                 break;
 
             case R.id.search_close_btn:
