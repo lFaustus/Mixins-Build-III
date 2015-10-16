@@ -48,12 +48,12 @@ public class BluetoothConnect implements Parcelable {
     protected BluetoothConnect(){
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         mDetectedDevices = new ArrayList<>();
-        try {
+        /*try {
             outStream = btSocket.getOutputStream();
             inputStream = btSocket.getInputStream();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
     }
 
@@ -66,7 +66,7 @@ public class BluetoothConnect implements Parcelable {
             {
                 final Method m = device.getClass().getMethod(
                         "createInsecureRfcommSocketToServiceRecord",
-                        new Class[] { UUID.class });
+                        UUID.class);
                 return (BluetoothSocket) m.invoke(device, MY_UUID);
             } catch (Exception e)
             {
