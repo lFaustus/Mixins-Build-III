@@ -12,7 +12,7 @@ import android.widget.Button;
  */
 public class PlayFontButton extends Button
 {
-    Typeface mTypeface;
+    static Typeface mTypeface;
 
     public PlayFontButton(Context context)
     {
@@ -41,7 +41,8 @@ public class PlayFontButton extends Button
 
     void init(Context context)
     {
-        mTypeface = Typeface.createFromAsset(context.getAssets(), "Play-Regular.ttf");
+        if(mTypeface == null)
+            mTypeface = Typeface.createFromAsset(context.getAssets(), "Play-Regular.ttf");
         setTypeface(mTypeface);
     }
 }

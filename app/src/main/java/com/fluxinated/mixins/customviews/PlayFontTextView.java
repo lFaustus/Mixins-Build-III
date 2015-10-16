@@ -12,7 +12,7 @@ import android.widget.TextView;
  */
 public class PlayFontTextView extends TextView {
 
-    Typeface mTypeface;
+    static Typeface mTypeface;
 
     public PlayFontTextView(Context context) {
         super(context);
@@ -39,7 +39,8 @@ public class PlayFontTextView extends TextView {
 
     void init(Context context)
     {
-        mTypeface = Typeface.createFromAsset(context.getAssets(),"Play-Regular.ttf");
+        if(mTypeface == null)
+            mTypeface = Typeface.createFromAsset(context.getAssets(),"Play-Regular.ttf");
         setTypeface(mTypeface);
     }
 }
