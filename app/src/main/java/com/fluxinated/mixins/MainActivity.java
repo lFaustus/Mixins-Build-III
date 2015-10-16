@@ -165,6 +165,12 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
             }
     }
 
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
     @Override
     public void onBackPressed()
     {
@@ -178,4 +184,7 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
         //}
         //finish();
     }
+
+
+
 }

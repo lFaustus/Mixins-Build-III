@@ -1,8 +1,6 @@
 package com.fluxinated.mixins.fragments;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,13 +18,13 @@ import java.util.Map;
 /**
  * A placeholder fragment containing a simple view.
  */
-public abstract class BaseLiquorFragment extends Fragment implements View.OnClickListener
+public abstract class BaseLiquorFragment extends BaseFragment
 {
 
-    public static final String FRAGMENT_KEY = "FragmentKey";
-    protected final static String BOTTLE_VOLUME = "VOLUME";
-    protected String mParam;
-    protected AlertDialog.Builder mDialog = null;
+    //public static final String FRAGMENT_KEY = "FragmentKey";
+    //protected final static String BOTTLE_VOLUME = "VOLUME";
+    //protected String mParam;
+    //protected AlertDialog.Builder mDialog = null;
 
     protected Map<Bottle, TextView> mTextViewSeekBarValue = Collections.synchronizedMap(new HashMap<>());
     protected Map<String, String> mOrder = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -46,12 +44,7 @@ public abstract class BaseLiquorFragment extends Fragment implements View.OnClic
         return mBaseLiquorFragment;
     }*/
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if(getArguments() != null)
-            mParam = getArguments().getString(FRAGMENT_KEY);
-    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
