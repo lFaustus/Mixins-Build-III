@@ -111,9 +111,8 @@ public class BluetoothConnect implements Parcelable
                     Boolean removeBonding = removeBond(mDevice);
                     if(removeBonding)
                     {
-                       // mBluetoothPairedDevicesListViewItems.remove(position);
-                       // mBluetoothPairedDevicesAdapter.notifyDataSetChanged();
-                        ;
+                        mBluetoothPairedDevicesListViewItems.remove(position);
+                        mBluetoothPairedDevicesAdapter.notifyDataSetChanged();
                     }
 
 
@@ -368,6 +367,14 @@ public class BluetoothConnect implements Parcelable
         mBluetoothSocket = (BluetoothSocket) in.readValue(ClassLoader.getSystemClassLoader());
         mOutputStream = (OutputStream) in.readValue(ClassLoader.getSystemClassLoader());
         mInputStream = (InputStream) in.readValue(ClassLoader.getSystemClassLoader());
+        mListViewDetectedDevices = (ListView)in.readValue(ClassLoader.getSystemClassLoader());
+        mListViewPairedDevices = (ListView)in.readValue(ClassLoader.getSystemClassLoader());
+        mListViewItemClickedOnDetectedDevices = (AdapterView.OnItemClickListener)in.readValue(ClassLoader.getSystemClassLoader());
+        mListViewItemClickedOnPairedDevices = (AdapterView.OnItemClickListener)in.readValue(ClassLoader.getSystemClassLoader());
+        in.readList(mBluetoothDetectedDevicesListViewItems,ClassLoader.getSystemClassLoader());
+        in.readList(mBluetoothPairedDevicesListViewItems,ClassLoader.getSystemClassLoader());
+        mBluetoothDetectedDevicesAdapter = (ArrayAdapter<String>)in.readValue(ClassLoader.getSystemClassLoader());
+        mBluetoothPairedDevicesAdapter = (ArrayAdapter<String>)in.readValue(ClassLoader.getSystemClassLoader());
         in.readTypedList(mBluetoothDetectedDevices, BluetoothDevice.CREATOR);
         in.readTypedList(mBluetoothPairedDevices,BluetoothDevice.CREATOR);
     }
@@ -400,6 +407,14 @@ public class BluetoothConnect implements Parcelable
         dest.writeValue(mBluetoothSocket);
         dest.writeValue(mOutputStream);
         dest.writeValue(mInputStream);
+        dest.writeValue(mListViewDetectedDevices);
+        dest.writeValue(mListViewPairedDevices);
+        dest.writeValue(mListViewItemClickedOnDetectedDevices);
+        dest.writeValue(mListViewItemClickedOnPairedDevices);
+        dest.writeList(mBluetoothDetectedDevicesListViewItems);
+        dest.writeList(mBluetoothPairedDevicesListViewItems);
+        dest.writeValue(mBluetoothDetectedDevicesAdapter);
+        dest.writeValue(mBluetoothPairedDevicesAdapter);
         dest.writeTypedList(mBluetoothDetectedDevices);
         dest.writeTypedList(mBluetoothPairedDevices);
     }
