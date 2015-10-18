@@ -4,6 +4,7 @@
     <string name="action_settings">Settings</string>
     <string name="liquor_label_default_value">Add Liquor</string>
     <string name="shared_preference_name">TheBarPreferences</string>
+    <string name="shared_preference_bluetooth_address">TheBarBluetoothModuleAddress</string>
     <string name="liquor_availability"> - liquor not available</string>
     <string name="BOTTLE_NAME_FIELD">BOTTLE_NAME_FIELD</string>
     <string name="MAX_VOLUME_FIELD">MAX_VOLUME_FIELD</string>

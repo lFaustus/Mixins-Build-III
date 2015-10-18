@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
 {
     private Bottle[] mBottles;
     private Map<Bottle,String> mCurrentBottleSettings = Collections.synchronizedMap(new LinkedHashMap<Bottle, String>());
-    private SharedPreferences mSharedPreferences;
+    private SharedPreferences mSharedPreferences,mSharedPreferencesBluetoothDevice;
     private DB mDB;
     private ImageLoaderEX mImageLoaderEX;
 
@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
 
         mSharedPreferences = getSharedPreferences(getResources().getString(R.string.shared_preference_name), Context.MODE_PRIVATE);
         mSharedPreferences.edit().apply();
+        mSharedPreferencesBluetoothDevice = getSharedPreferences(getResources().getString(R.string.shared_preference_bluetooth_address),Context.MODE_PRIVATE);
+        mSharedPreferencesBluetoothDevice.edit().apply();
         mBottles = Bottle.values();
         checkCurrentBottle();
         mDB = new DB();
@@ -85,6 +87,11 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
         }
     }
 
+    protected String getLastConnectedBluetoothDevice()
+    {
+        return mSharedPreferencesBluetoothDevice.getString(getResources().getString(R.string.shared_preference_bluetooth_address),null);
+    }
+
     public Map<Bottle, String> getCurrentBottleSettings()
     {
         return mCurrentBottleSettings;
@@ -93,6 +100,11 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
     public SharedPreferences getSharedPreferences()
     {
         return mSharedPreferences;
+    }
+
+    public SharedPreferences getSharedPreferencesBluetoothDevice()
+    {
+        return mSharedPreferencesBluetoothDevice;
     }
 
     public Bottle[] getBottles()
