@@ -1,10 +1,12 @@
 package com.fluxinated.mixins.fragments;
 
 import android.animation.Animator;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Point;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -391,6 +393,7 @@ public class LiquorList extends BaseLiquorFragment implements EndlessStaggeredRe
         mTransitionAnimatorSearchView.animate();
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onClick(View v)
     {

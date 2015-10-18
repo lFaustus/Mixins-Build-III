@@ -2,14 +2,17 @@ package com.fluxinated.mixins;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -18,10 +21,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.fluxinated.mixins.database.MyApplication;
 import com.fluxinated.mixins.enums.FragmentTags;
 
 import java.io.IOException;
@@ -36,59 +40,63 @@ import java.util.UUID;
 /**
  * Created by proxmaccoy25 on 10/16/2015.
  */
-public class BluetoothConnect implements Parcelable
-{
+public class BluetoothConnect implements Parcelable {
 
-    private static final UUID MY_UUID = UUID
+    public static final UUID MY_UUID = UUID
             .fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     private BluetoothAdapter mBluetoothAdapter = null;
     private BluetoothSocket mBluetoothSocket = null;
     private OutputStream mOutputStream = null;
     private InputStream mInputStream = null;
-    private ArrayList<BluetoothDevice> mBluetoothDetectedDevices,mBluetoothPairedDevices;
-    private ArrayList<String>mBluetoothDetectedDevicesListViewItems,mBluetoothPairedDevicesListViewItems;
-    private ArrayAdapter<String> mBluetoothDetectedDevicesAdapter,mBluetoothPairedDevicesAdapter;
+    private ArrayList<BluetoothDevice> mBluetoothDetectedDevices, mBluetoothPairedDevices;
+    private ArrayList<String> mBluetoothDetectedDevicesListViewItems, mBluetoothPairedDevicesListViewItems;
+    private ArrayAdapter<String> mBluetoothDetectedDevicesAdapter, mBluetoothPairedDevicesAdapter;
     private Activity mActivity;
     private static final String TAG = "BlueToothConnect";
     private boolean hasFailedToConnectMustRetry = false;
     private AlertDialog.Builder mAlertDialog = null;
-    private ListView mListViewDetectedDevices,mListViewPairedDevices;
-    private AdapterView.OnItemClickListener mListViewItemClickedOnDetectedDevices,mListViewItemClickedOnPairedDevices;
+    private ListView mListViewDetectedDevices, mListViewPairedDevices;
+    private AdapterView.OnItemClickListener mListViewItemClickedOnDetectedDevices, mListViewItemClickedOnPairedDevices;
     private View mBluetoothDevicesLayout;
+    private LinearLayout mBluetoothStatusView, mListViews;
+    private TextView mBluetoothStatusText;
+    private AlertDialog al;
+    private connectTask mConnectTask;
 
 
-    protected BluetoothConnect(Activity activity)
-    {
+
+    protected BluetoothConnect(Activity activity) {
         mActivity = activity;
         mBluetoothDevicesLayout = LayoutInflater.from(mActivity).inflate(R.layout.list_bluetoothdevices, null);
-        mListViewDetectedDevices = (ListView)mBluetoothDevicesLayout.findViewById(R.id.list_available_devices);
-        mListViewPairedDevices = (ListView)mBluetoothDevicesLayout.findViewById(R.id.list_paired_devices);
+        mListViewDetectedDevices = (ListView) mBluetoothDevicesLayout.findViewById(R.id.list_available_devices);
+        mListViewPairedDevices = (ListView) mBluetoothDevicesLayout.findViewById(R.id.list_paired_devices);
+        mBluetoothStatusView = (LinearLayout) mBluetoothDevicesLayout.findViewById(R.id.bluetooth_status_view);
+        mListViews = (LinearLayout) mBluetoothDevicesLayout.findViewById(R.id.listviews);
+        mBluetoothStatusText = (TextView) mBluetoothDevicesLayout.findViewById(R.id.bluetooth_status_text);
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         mBluetoothDetectedDevices = new ArrayList<>();
         mBluetoothPairedDevices = new ArrayList<>();
         mBluetoothDetectedDevicesListViewItems = new ArrayList<>();
         mBluetoothPairedDevicesListViewItems = new ArrayList<>();
-        mBluetoothDetectedDevicesAdapter = new ArrayAdapter<String>(mActivity,android.R.layout.simple_list_item_1, mBluetoothPairedDevicesListViewItems);
-        mBluetoothPairedDevicesAdapter = new ArrayAdapter<String>(mActivity,android.R.layout.simple_list_item_1,mBluetoothPairedDevicesListViewItems);
+        mBluetoothDetectedDevicesAdapter = new ArrayAdapter<String>(mActivity, android.R.layout.simple_list_item_1, mBluetoothDetectedDevicesListViewItems);
+        mBluetoothPairedDevicesAdapter = new ArrayAdapter<String>(mActivity, android.R.layout.simple_list_item_1, mBluetoothPairedDevicesListViewItems);
         mListViewDetectedDevices.setAdapter(mBluetoothDetectedDevicesAdapter);
         mListViewPairedDevices.setAdapter(mBluetoothPairedDevicesAdapter);
 
 
-        mListViewItemClickedOnDetectedDevices = new AdapterView.OnItemClickListener()
-        {
+        mListViewItemClickedOnDetectedDevices = new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 BluetoothDevice mBluetoothDevice = mBluetoothDetectedDevices.get(position);
                 Boolean isBonded = false;
                 try {
-                  isBonded = createBond(mBluetoothDevice);
-                    if(isBonded)
-                    {
+                    isBonded = createBond(mBluetoothDevice);
+                    if (isBonded) {
                         //arrayListpaired.add(bdDevice.getName()+"\n"+bdDevice.getAddress());
                         //adapter.notifyDataSetChanged();
-                        getPairedDevices();
+                        Toast.makeText(mActivity, "Pairing Success", Toast.LENGTH_SHORT);
+                        //getPairedDevices();
                         //mBluetoothPairedDevicesAdapter.notifyDataSetChanged();
                     }
                 } catch (Exception e) {
@@ -100,23 +108,21 @@ public class BluetoothConnect implements Parcelable
 
         };
 
-        mListViewItemClickedOnPairedDevices = new AdapterView.OnItemClickListener()
-        {
+        mListViewItemClickedOnPairedDevices = new AdapterView.OnItemClickListener() {
 
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 BluetoothDevice mDevice = mBluetoothPairedDevices.get(position);
                 try {
                     Boolean removeBonding = removeBond(mDevice);
-                    if(removeBonding)
-                    {
+                    if (removeBonding) {
                         mBluetoothPairedDevicesListViewItems.remove(position);
                         mBluetoothPairedDevicesAdapter.notifyDataSetChanged();
+                        Toast.makeText(mActivity, "Unpaired success", Toast.LENGTH_SHORT).show();
                     }
 
 
-                    Log.i("Log", "Removed"+removeBonding);
+                    Log.i("Log", "Removed" + removeBonding);
                 } catch (Exception e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -124,6 +130,9 @@ public class BluetoothConnect implements Parcelable
             }
         };
 
+        mListViewDetectedDevices.setOnItemClickListener(mListViewItemClickedOnDetectedDevices);
+        mListViewPairedDevices.setOnItemClickListener(mListViewItemClickedOnPairedDevices);
+        Start();
         /*try {
             mOutputStream = mBluetoothSocket.getOutputStream();
             mInputStream = mBluetoothSocket.getInputStream();
@@ -133,15 +142,12 @@ public class BluetoothConnect implements Parcelable
 
     }
 
-    private void getPairedDevices()
-    {
+    private void getPairedDevices() {
         mBluetoothPairedDevicesListViewItems = new ArrayList<>();
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-        if(pairedDevices.size() > 0)
-        {
+        if (pairedDevices.size() > 0) {
             Iterator<BluetoothDevice> bluetoothDevice = pairedDevices.iterator();
-            while(bluetoothDevice.hasNext())
-            {
+            while (bluetoothDevice.hasNext()) {
                 BluetoothDevice mDevice = bluetoothDevice.next();
                 mBluetoothPairedDevices.add(mDevice);
                 mBluetoothPairedDevicesListViewItems.add(mDevice.getName() + "\n" + mDevice.getAddress());
@@ -174,20 +180,22 @@ public class BluetoothConnect implements Parcelable
         mInputStream = mBluetoothSocket.getInputStream();
     }*/
 
-    private BluetoothSocket createBluetoothSocket(BluetoothDevice device)
-            throws IOException
-    {
+    public void Start() {
+        onBluetooth();
+        startSearching();
 
-        if (Build.VERSION.SDK_INT >= 10)
-        {
-            try
-            {
+    }
+
+    private BluetoothSocket createBluetoothSocket(BluetoothDevice device)
+            throws IOException {
+
+        if (Build.VERSION.SDK_INT >= 10) {
+            try {
                 final Method m = device.getClass().getMethod(
                         "createInsecureRfcommSocketToServiceRecord",
                         UUID.class);
                 return (BluetoothSocket) m.invoke(device, MY_UUID);
-            } catch (Exception e)
-            {
+            } catch (Exception e) {
                 Log.e(TAG, "Could not create Insecure RFComm Connection", e);
             }
         }
@@ -195,8 +203,7 @@ public class BluetoothConnect implements Parcelable
     }
 
     public boolean removeBond(BluetoothDevice btDevice)
-            throws Exception
-    {
+            throws Exception {
         Class btClass = Class.forName("android.bluetooth.BluetoothDevice");
         Method removeBondMethod = btClass.getMethod("removeBond");
         Boolean returnValue = (Boolean) removeBondMethod.invoke(btDevice);
@@ -205,204 +212,223 @@ public class BluetoothConnect implements Parcelable
 
 
     public boolean createBond(BluetoothDevice btDevice)
-            throws Exception
-    {
+            throws Exception {
         Class class1 = Class.forName("android.bluetooth.BluetoothDevice");
         Method createBondMethod = class1.getMethod("createBond");
         Boolean returnValue = (Boolean) createBondMethod.invoke(btDevice);
         return returnValue.booleanValue();
     }
 
-    private void startSearching()
-    {
+    private void startSearching() {
         Log.i("Log", "in the start searching method");
         mBluetoothDetectedDevices = new ArrayList<>();
         getPairedDevices();
-        IntentFilter intentFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        intentFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-        MyApplication.getAppContext().registerReceiver(myReceiver, intentFilter);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BluetoothDevice.ACTION_FOUND);
+       intentFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+        intentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+
+        intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+        intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+
+        mActivity.registerReceiver(myReceiver, intentFilter);
         mBluetoothAdapter.startDiscovery();
     }
 
-    private void onBluetooth()
-    {
-        if (!mBluetoothAdapter.isEnabled())
-        {
+    private void onBluetooth() {
+        if (!mBluetoothAdapter.isEnabled()) {
             mBluetoothAdapter.enable();
             Log.i("Log", "Bluetooth is Enabled");
         }
     }
 
-    private void offBluetooth()
-    {
-        if (mBluetoothAdapter.isEnabled())
-        {
+    public void offBluetooth() {
+        if (mBluetoothAdapter.isEnabled()) {
             mBluetoothAdapter.disable();
         }
     }
 
-    public String getRecentConnectedDevice()
-    {
+    public String getRecentConnectedDevice() {
         return ((MainActivity) mActivity).getLastConnectedBluetoothDevice();
     }
 
 
-    private void makeDiscoverable()
-    {
+    private void makeDiscoverable() {
         Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-        MyApplication.getAppContext().startActivity(discoverableIntent);
+        mActivity.startActivity(discoverableIntent);
         Log.i("Log", "Discoverable ");
     }
 
-
-    private BroadcastReceiver myReceiver = new BroadcastReceiver()
-    {
+    private BroadcastReceiver myReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent)
-        {
+        public void onReceive(Context context, Intent intent) {
             // Message msg = Message.obtain();
+            Toast.makeText(context, "ACTION", Toast.LENGTH_SHORT).show();
             String action = intent.getAction();
             BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-            if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action))
-            {
-                Toast.makeText(context, "ACTION_FOUND_STATE_CHANGED", Toast.LENGTH_SHORT).show();
-                if (device.getBondState() == BluetoothDevice.BOND_BONDED)
-                {
-
-                    if (Connect(device))
-                    {
+            //BluetoothDevice mDevice = null;
+            if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
+                // Toast.makeText(context, "ACTION_FOUND_STATE_CHANGED", Toast.LENGTH_SHORT).show();
+                if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
+                    Log.i("Connection SUccess", "ACTION_FOUND_STATE_CHANGED");
+                   /* Log.i("Connection SUccess", "BONDED");
+                    SharedPreferences.Editor editor = ((MainActivity) mActivity).getSharedPreferencesBluetoothDevice().edit();
+                    editor.putString(mActivity.getResources().getString(R.string.shared_preference_bluetooth_address), device.getAddress());
+                    editor.commit();
+                    mBluetoothDetectedDevices = null;
+                    al.cancel();*/
+                    /*if (Connect(device)) {
+                        Log.i("Connection SUccess", "ACTION_FOUND_STATE_CHANGED");
                         //hasFailedToConnectMustRetry = false;
                         SharedPreferences.Editor editor = ((MainActivity) mActivity).getSharedPreferencesBluetoothDevice().edit();
                         editor.putString(mActivity.getResources().getString(R.string.shared_preference_bluetooth_address), device.getAddress());
                         editor.commit();
                         mBluetoothDetectedDevices = null;
+                        al.cancel();
                         ((MainActivity) mActivity).OnFragmentChange(FragmentTags.LiquorList, null);
-                    } else
-                    {
+                    } else {
+                        Log.i("Connection Failed", "ACTION_FOUND_STATE_CHANGED");
                         //hasFailedToConnectMustRetry = true;
                         abortBroadcast();
-                        MyApplication.getAppContext().unregisterReceiver(this);
+                        mActivity.unregisterReceiver(this);
                         startSearching();
+                    }*/
+                    if(mConnectTask == null) {
+                        mConnectTask = new connectTask(device);
+                        mConnectTask.execute();
                     }
+
+                } else if (device.getBondState() == BluetoothDevice.BOND_BONDING) {
+                    Log.i("BondState", "BONDING");
+                } else if (device.getBondState() == BluetoothDevice.BOND_NONE) {
+                    Log.i("BondState", "NONE");
                 }
-            } else if (BluetoothDevice.ACTION_FOUND.equals(action))
-            {
-                Toast.makeText(context, "ACTION_FOUND", Toast.LENGTH_SHORT).show();
-                if (device.getBondState() == BluetoothDevice.BOND_BONDED && device.getAddress().equals(getRecentConnectedDevice().equals(device.getAddress())) && !hasFailedToConnectMustRetry)
-                {
 
-                    if (!Connect(device))
-                    {
-                        hasFailedToConnectMustRetry = true;
-                        abortBroadcast();
-                        MyApplication.getAppContext().unregisterReceiver(this);
-                        startSearching();
-                    }
-                    else
-                    {
-                        hasFailedToConnectMustRetry = false;
-                        mBluetoothDetectedDevices = null;
-                        ((MainActivity) mActivity).OnFragmentChange(FragmentTags.LiquorList, null);
-                    }
-                } else
-                {
+            } else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
+                ListBluetoothDevices();
+                mBluetoothStatusText.setText("Searching For Devices...");
+            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
 
-                    if (!mBluetoothDetectedDevices.contains(device.getAddress()))
-                    {
+                if(mConnectTask == null) {
+                    mBluetoothStatusView.setVisibility(View.GONE);
+                    mListViews.setVisibility(View.VISIBLE);
+                }
+
+
+            } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                if (device.getBondState() == BluetoothDevice.BOND_BONDED && device.getAddress().equals(getRecentConnectedDevice())) {
+
+                    if(mConnectTask == null) {
+                        mConnectTask = new connectTask(device);
+                        mConnectTask.execute();
+                    }
+
+                } else {
+
+                    if (!mBluetoothDetectedDevices.contains(device.getAddress())) {
                         mBluetoothDetectedDevices.add(device);
+
+                        mBluetoothDetectedDevicesAdapter.add(device.getName() + "\n" + device.getAddress());
                     }
                 }
+                mBluetoothDetectedDevicesAdapter.notifyDataSetChanged();
+                Log.e("Size", mBluetoothDetectedDevicesAdapter.getCount() + "");
             }
         }
 
     };
 
-    private boolean Connect(BluetoothDevice device)
-    {
+    private boolean Connect(BluetoothDevice device) {
         try
         {
-            mBluetoothAdapter.cancelDiscovery();
             mBluetoothSocket = createBluetoothSocket(device);
+            mBluetoothAdapter.cancelDiscovery();
+
             mBluetoothSocket.connect();
             Log.i("socket connect", "Connection success");
             mOutputStream = mBluetoothSocket.getOutputStream();
             mInputStream = mBluetoothSocket.getInputStream();
             return true;
-        } catch (Exception e)
-        {
-            try
-            {
+        } catch (Exception e) {
+            try {
                 mBluetoothSocket.close();
                 Log.i("socket close", "trying to close socket after connection failure");
-            } catch (Exception e2)
-            {
+            } catch (Exception e2) {
                 Log.e("Fatal Error", "In onResume() and unable to close socket during connection failure"
                         + e2.getMessage() + ".");
-            } finally
-            {
+            } finally {
                 return false;
                 //new dialog with list of paired and detected devices
             }
         }
     }
 
-    private void ListBluetoothDevices()
-    {
-        if(mAlertDialog == null)
-        {
+    private void ListBluetoothDevices() {
+        if (mAlertDialog == null) {
             mAlertDialog = new AlertDialog.Builder(mActivity);
-            AlertDialog al = mAlertDialog.create();
+            al = mAlertDialog.create();
 
             al.setView(mBluetoothDevicesLayout);
-            al.setCancelable(false);
-
+            al.setCancelable(true);
+            al.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    dialog.dismiss();
+                    mAlertDialog = null;
+                }
+            });
+            al.show();
         }
     }
 
-
-    protected BluetoothConnect(Parcel in)
+    public OutputStream getOutputStream()
     {
+        return this.mOutputStream;
+    }
+
+    public InputStream getInputStream()
+    {
+        return this.mInputStream;
+    }
+
+
+    protected BluetoothConnect(Parcel in) {
         mBluetoothAdapter = (BluetoothAdapter) in.readValue(ClassLoader.getSystemClassLoader());
         mBluetoothSocket = (BluetoothSocket) in.readValue(ClassLoader.getSystemClassLoader());
         mOutputStream = (OutputStream) in.readValue(ClassLoader.getSystemClassLoader());
         mInputStream = (InputStream) in.readValue(ClassLoader.getSystemClassLoader());
-        mListViewDetectedDevices = (ListView)in.readValue(ClassLoader.getSystemClassLoader());
-        mListViewPairedDevices = (ListView)in.readValue(ClassLoader.getSystemClassLoader());
-        mListViewItemClickedOnDetectedDevices = (AdapterView.OnItemClickListener)in.readValue(ClassLoader.getSystemClassLoader());
-        mListViewItemClickedOnPairedDevices = (AdapterView.OnItemClickListener)in.readValue(ClassLoader.getSystemClassLoader());
-        in.readList(mBluetoothDetectedDevicesListViewItems,ClassLoader.getSystemClassLoader());
-        in.readList(mBluetoothPairedDevicesListViewItems,ClassLoader.getSystemClassLoader());
-        mBluetoothDetectedDevicesAdapter = (ArrayAdapter<String>)in.readValue(ClassLoader.getSystemClassLoader());
-        mBluetoothPairedDevicesAdapter = (ArrayAdapter<String>)in.readValue(ClassLoader.getSystemClassLoader());
+        mListViewDetectedDevices = (ListView) in.readValue(ClassLoader.getSystemClassLoader());
+        mListViewPairedDevices = (ListView) in.readValue(ClassLoader.getSystemClassLoader());
+        mListViewItemClickedOnDetectedDevices = (AdapterView.OnItemClickListener) in.readValue(ClassLoader.getSystemClassLoader());
+        mListViewItemClickedOnPairedDevices = (AdapterView.OnItemClickListener) in.readValue(ClassLoader.getSystemClassLoader());
+        in.readList(mBluetoothDetectedDevicesListViewItems, ClassLoader.getSystemClassLoader());
+        in.readList(mBluetoothPairedDevicesListViewItems, ClassLoader.getSystemClassLoader());
+        mBluetoothDetectedDevicesAdapter = (ArrayAdapter<String>) in.readValue(ClassLoader.getSystemClassLoader());
+        mBluetoothPairedDevicesAdapter = (ArrayAdapter<String>) in.readValue(ClassLoader.getSystemClassLoader());
         in.readTypedList(mBluetoothDetectedDevices, BluetoothDevice.CREATOR);
-        in.readTypedList(mBluetoothPairedDevices,BluetoothDevice.CREATOR);
+        in.readTypedList(mBluetoothPairedDevices, BluetoothDevice.CREATOR);
     }
 
-    public static final Creator<BluetoothConnect> CREATOR = new Creator<BluetoothConnect>()
-    {
+    public static final Creator<BluetoothConnect> CREATOR = new Creator<BluetoothConnect>() {
         @Override
-        public BluetoothConnect createFromParcel(Parcel in)
-        {
+        public BluetoothConnect createFromParcel(Parcel in) {
             return new BluetoothConnect(in);
         }
 
         @Override
-        public BluetoothConnect[] newArray(int size)
-        {
+        public BluetoothConnect[] newArray(int size) {
             return new BluetoothConnect[size];
         }
     };
 
     @Override
-    public int describeContents()
-    {
+    public int describeContents() {
         return 0;
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags)
-    {
+    public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(mBluetoothAdapter);
         dest.writeValue(mBluetoothSocket);
         dest.writeValue(mOutputStream);
@@ -420,5 +446,123 @@ public class BluetoothConnect implements Parcelable
     }
 
 
+    class connectTask extends AsyncTask<Void,Void,Boolean>
+    {
+        BluetoothDevice mDevice;
+        connectTask(BluetoothDevice device)
+        {
+            mDevice = device;
+        }
 
+        @Override
+        protected Boolean doInBackground(Void... params) {
+
+            return Connect(mDevice);
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+
+            if(aBoolean)
+            {
+                Log.i("Connection SUccess", "ACTION_FOUND_STATE_CHANGED");
+                //hasFailedToConnectMustRetry = false;
+                mActivity.unregisterReceiver(myReceiver);
+                SharedPreferences.Editor editor = ((MainActivity) mActivity).getSharedPreferencesBluetoothDevice().edit();
+                editor.putString(mActivity.getResources().getString(R.string.shared_preference_bluetooth_address), mDevice.getAddress());
+                editor.commit();
+                mBluetoothDetectedDevices = null;
+                al.cancel();
+                ((MainActivity) mActivity).OnFragmentChange(FragmentTags.LiquorList, null);
+            }
+            else
+            {
+                Log.i("Connection Failed", "ACTION_FOUND_STATE_CHANGED");
+                //hasFailedToConnectMustRetry = true;
+               // abortBroadcast();
+               // mActivity.unregisterReceiver(this);
+                //startSearching();
+            }
+        }
+    }
+
+    public class DispenseTask extends AsyncTask<Void, String, Void>
+    {
+        ProgressDialog prgdialog;
+        Activity activity;
+        public DispenseTask(Activity activity)
+        {
+            prgdialog = new ProgressDialog(activity);
+            prgdialog.setIndeterminate(true);
+            prgdialog.setCancelable(false);
+            prgdialog.setMessage("Dispensing...");
+            prgdialog.setTitle("Please Wait");
+            this.activity = activity;
+        }
+
+        @Override
+        protected void onPreExecute()
+        {
+            prgdialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0)
+        {
+            byte[] buffer = new byte[256];
+            StringBuilder sb = new StringBuilder();
+            int bytes;
+            while(true)
+            {
+                try
+                {
+
+                    bytes = mInputStream.read(buffer);
+                    String strIncom = new String(buffer,0,bytes);
+                    sb.append(strIncom);
+                    Log.e("Arduino Data String",strIncom);
+                    if(sb.toString().equals("done"))
+                    {
+                        sb.delete(0, sb.length());
+                        publishProgress("SUCCESS");
+                        return null;
+                    }
+
+                }
+                catch(IOException e)
+                {
+                    Log.e("CATCH DISPENSE",e.toString());
+                    Log.e("Arduino Data String",sb+" CATCH");
+                    return null;
+                }
+
+            }
+        }
+
+
+
+        @Override
+        protected void onProgressUpdate(String... values)
+        {
+            //try
+            //{
+            prgdialog.dismiss();
+            //((MainActivity)activity).getInputStream().close();
+            //}
+            //catch (IOException e)
+            //{
+            // TODO Auto-generated catch block
+            //	e.printStackTrace();
+            //}
+        }
+
+        @Override
+        protected void onPostExecute(Void result)
+        {
+            // TODO Auto-generated method stub
+            super.onPostExecute(result);
+        }
+
+
+    }
 }

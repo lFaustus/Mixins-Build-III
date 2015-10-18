@@ -3,6 +3,7 @@ package com.fluxinated.mixins.fragments;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Message;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +27,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -494,7 +498,38 @@ public class AdjustLiquorVolume extends MixLiquor
 
 
                                 }
+                                else {
+                                    Message msg = Message.obtain();
+                                    JSONArray arr = null;
+                                    ByteArrayOutputStream outstream = null;
+                                    DataOutputStream dataOutstream = null;
+                                    try {
+                                        arr = mJSONObjectLiquor.getJSONArray("Order");
+                                        outstream = new ByteArrayOutputStream();
+                                        dataOutstream = new DataOutputStream(outstream);
 
+                                        for (int i = 0; i < arr.length(); i++) {
+                                            try {
+                                                dataOutstream.writeUTF(arr.get(i).toString());
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                        msg.obj = outstream.toByteArray();
+                                        ((MainActivity)getActivity()).sendMessage(msg);
+                                        outstream.close();
+                                        dataOutstream.close();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    } finally {
+                                        arr = null;
+                                        outstream = null;
+                                        dataOutstream = null;
+                                        msg = null;
+                                    }
+                                }
                                 //Log.e("mLiquorName", mLiquorName);
                                 //Log.e("mLiquorDesc", mLiquorDescription);
 
@@ -618,13 +653,21 @@ public class AdjustLiquorVolume extends MixLiquor
             {*/
                 if(!entry.getValue().equalsIgnoreCase(mTempTextView.getText().toString()))
                 {
-                    Log.e(" name", "text value "+ mTempTextView.getText().toString() +" entry key " + entry.getValue());
+                   // Log.e(" name", "text value "+ mTempTextView.getText().toString() +" entry key " + entry.getValue());
                     isAvailable = false;
 
                     if(!it.hasNext())
                     {
-                        Log.e(" !has next", "text value "+ mTempTextView.getText().toString() +" entry key " + entry.getValue());
+                        //Log.e(" !has next", "text value "+ mTempTextView.getText().toString() +" entry key " + entry.getValue());
                         mInActivatedSeekbars_sanitation.put(b.name(), b.name());
+                        if(mInActivatedSeekbars_sanitation.size() == super.mOrder.size()/2)
+                        {
+                            Log.e("sanitation size",mInActivatedSeekbars_sanitation.size()+"");
+                            Log.e("morder size",mOrder.size()+"");
+                            mMixButton.setEnabled(false);
+                        }
+                        else
+                            mMixButton.setEnabled(true);
                     }
 
                     //continue;

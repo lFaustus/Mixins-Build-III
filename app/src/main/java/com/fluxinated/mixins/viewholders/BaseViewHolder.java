@@ -3,6 +3,7 @@ package com.fluxinated.mixins.viewholders;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.os.Message;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -19,7 +20,12 @@ import com.fluxinated.mixins.enums.FragmentTags;
 import com.fluxinated.mixins.model.CardInformation;
 import com.fluxinated.mixins.model.Liquor;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * Created by User on 09/10/2015.
@@ -124,6 +130,38 @@ public class BaseViewHolder extends RecyclerView.ViewHolder implements View.OnCl
                     CardInformation mCardInformation = (CardInformation)triggeredView.getTag();
                     Liquor mLiquor = mCardInformation.getLiquor();
                     Log.e("Pour",mLiquor.getLiquorOrder().toString());
+
+
+                    Message msg = Message.obtain();
+                    JSONArray arr = null;
+                    ByteArrayOutputStream outstream = null;
+                    DataOutputStream dataOutstream = null;
+                    try {
+                        arr = mLiquor.getLiquorOrder();
+                        outstream = new ByteArrayOutputStream();
+                        dataOutstream = new DataOutputStream(outstream);
+
+                        for (int i = 0; i < arr.length(); i++) {
+                            try {
+                                dataOutstream.writeUTF(arr.get(i).toString());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        msg.obj = outstream.toByteArray();
+                        ((MainActivity)mActivity).sendMessage(msg);
+                        outstream.close();
+                        dataOutstream.close();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        arr = null;
+                        outstream = null;
+                        dataOutstream = null;
+                        msg = null;
+                    }
                     dialog.dismiss();
                 }
             });

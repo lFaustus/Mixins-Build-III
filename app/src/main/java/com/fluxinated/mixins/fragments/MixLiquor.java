@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -308,23 +312,53 @@ public class MixLiquor extends BaseLiquorFragment
                                 if (triggeredView.getId() != R.id.mix_button_drinks) {
 
 
-                                        mLiquorName = ((EditText) extra[0]).getText().toString();
-                                        mLiquorDescription = ((EditText) extra[1]).getText().toString();
+                                    mLiquorName = ((EditText) extra[0]).getText().toString();
+                                    mLiquorDescription = ((EditText) extra[1]).getText().toString();
 
-                                        //sets the liquor name into JSONObject
-                                        mJSONObjectLiquor.put(Liquor.JSONDB_LIQUOR_NAME, mLiquorName);
+                                    //sets the liquor name into JSONObject
+                                    mJSONObjectLiquor.put(Liquor.JSONDB_LIQUOR_NAME, mLiquorName);
 
-                                        //sets the liquor description into JSONObject
-                                        mJSONObjectLiquor.put(Liquor.JSONDB_LIQUOR_DESCRIPTION, mLiquorDescription);
+                                    //sets the liquor description into JSONObject
+                                    mJSONObjectLiquor.put(Liquor.JSONDB_LIQUOR_DESCRIPTION, mLiquorDescription);
 
-                                        MixLiquor.this.mTextView.setText(mLiquorName);
-                                        if (((MainActivity) getActivity()).CreateLiquor(mLiquorName,mLiquorDescription,mJSONObjectLiquor))
-                                            Toast.makeText(getActivity(), "mixture successfully added", Toast.LENGTH_SHORT).show();
-                                        else
-                                            Toast.makeText(getActivity(), "Failed to add mixture! Please try again", Toast.LENGTH_SHORT).show();
+                                    MixLiquor.this.mTextView.setText(mLiquorName);
+                                    if (((MainActivity) getActivity()).CreateLiquor(mLiquorName, mLiquorDescription, mJSONObjectLiquor))
+                                        Toast.makeText(getActivity(), "mixture successfully added", Toast.LENGTH_SHORT).show();
+                                    else
+                                        Toast.makeText(getActivity(), "Failed to add mixture! Please try again", Toast.LENGTH_SHORT).show();
 
 
+                                } else {
+                                    Message msg = Message.obtain();
+                                    JSONArray arr = null;
+                                    ByteArrayOutputStream outstream = null;
+                                    DataOutputStream dataOutstream = null;
+                                    try {
+                                        arr = mJSONObjectLiquor.getJSONArray("Order");
+                                        outstream = new ByteArrayOutputStream();
+                                        dataOutstream = new DataOutputStream(outstream);
 
+                                        for (int i = 0; i < arr.length(); i++) {
+                                            try {
+                                                dataOutstream.writeUTF(arr.get(i).toString());
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                        msg.obj = outstream.toByteArray();
+                                        ((MainActivity)getActivity()).sendMessage(msg);
+                                        outstream.close();
+                                        dataOutstream.close();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    } finally {
+                                        arr = null;
+                                        outstream = null;
+                                        dataOutstream = null;
+                                        msg = null;
+                                    }
                                 }
 
                                 Log.e("JSONADD", mJSONObjectLiquor.toString());

@@ -2,10 +2,15 @@ package com.fluxinated.mixins;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.fluxinated.mixins.adapters.StaggeredRecyclerAdapter;
 import com.fluxinated.mixins.database.DB;
@@ -18,19 +23,26 @@ import com.fluxinated.mixins.fragments.MixLiquor;
 import com.fluxinated.mixins.loader.ImageLoaderEX;
 import com.fluxinated.mixins.model.CardInformation;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity implements StaggeredRecyclerAdapter.callbacks,OnFragmentChangeListener
+public class MainActivity extends AppCompatActivity implements StaggeredRecyclerAdapter.callbacks,OnFragmentChangeListener,Handler.Callback
 {
     private Bottle[] mBottles;
     private Map<Bottle,String> mCurrentBottleSettings = Collections.synchronizedMap(new LinkedHashMap<Bottle, String>());
     private SharedPreferences mSharedPreferences,mSharedPreferencesBluetoothDevice;
     private DB mDB;
     private ImageLoaderEX mImageLoaderEX;
+    private BluetoothConnect mBluetoothConnect;
+    private Handler mHandler;
+
+
 
 
     @Override
@@ -38,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
         //requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        mHandler = new Handler(this);
         mSharedPreferences = getSharedPreferences(getResources().getString(R.string.shared_preference_name), Context.MODE_PRIVATE);
         mSharedPreferences.edit().apply();
         mSharedPreferencesBluetoothDevice = getSharedPreferences(getResources().getString(R.string.shared_preference_bluetooth_address),Context.MODE_PRIVATE);
@@ -47,13 +59,18 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
         checkCurrentBottle();
         mDB = new DB();
         mImageLoaderEX = new ImageLoaderEX(this);
-
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         if (savedInstanceState == null)
         {
-            getSupportFragmentManager().beginTransaction()
+           /* getSupportFragmentManager().beginTransaction()
                     .add(R.id.root_view, LiquorList.getInstance(FragmentTags.LiquorList.getTAG()))
-                    .commit();
+                    .commit();*/
+            mBluetoothConnect = new BluetoothConnect(this);
+
+           // mBluetoothConnect.execute();
         }
+        else
+            mBluetoothConnect = (BluetoothConnect) getLastCustomNonConfigurationInstance();
     }
 
 
@@ -154,6 +171,11 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
 
     }
 
+    public void sendMessage(Message msg)
+    {
+        mHandler.sendMessage(msg);
+    }
+
     @Override
     public void OnFragmentChange(FragmentTags fragment, Object... extra)
     {
@@ -175,18 +197,37 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
                         .replace(R.id.root_view, BottleSettings.getInstance(FragmentTags.SETTINGS.getTAG()))
                         .addToBackStack(null).commit();
             }
+            else if(fragment == FragmentTags.LiquorList)
+            {
+                if(getSupportFragmentManager().getBackStackEntryCount() <= 0)
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.root_view, LiquorList.getInstance(FragmentTags.LiquorList.getTAG()))
+                        .commit();
+            }
     }
 
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+       // outState.putParcelable("Bluetooth",mBluetoothConnect);
+    }
+
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        return mBluetoothConnect;
     }
 
     @Override
     public void onBackPressed()
     {
+
+        if(getSupportFragmentManager().getBackStackEntryCount()==0) {
+            mBluetoothConnect.offBluetooth();
+        }
         super.onBackPressed();
+
         //if(getSupportFragmentManager().getBackStackEntryCount() > 0)
         //{
             //getSupportFragmentManager().popBackStack();
@@ -195,8 +236,58 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
           //  return;
         //}
         //finish();
+
     }
 
 
+    @Override
+    public boolean handleMessage(Message msg) {
+        sendData((byte[])msg.obj);
+        ByteArrayInputStream bais = new ByteArrayInputStream((byte[])msg.obj);
+        DataInputStream in = new DataInputStream(bais);
+        try
+        {
+            while (in.available() > 0) {
+                System.out.println(in.available());
+                String element = in.readUTF();
+                System.out.print(element);
+                Log.i("message",element);
 
+            }
+            in.close();
+        } catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    private void sendData(byte[] msgBuffer)
+    {
+        try
+        {
+            mBluetoothConnect.getOutputStream().write(msgBuffer);
+            mBluetoothConnect.new DispenseTask(MainActivity.this).execute();
+            mBluetoothConnect.getOutputStream().flush();
+        } catch (IOException e)
+        {
+            String msg = "In onResume() and an exception occurred during write: "
+                    + e.getMessage();
+            if (getLastConnectedBluetoothDevice().equals("00:00:00:00:00:00"))
+                msg = msg
+                        + ".\n\nUpdate your server address from 00:00:00:00:00:00 to the correct address on line 35 in the java code";
+            msg = msg + ".\n\nCheck that the SPP UUID: " + BluetoothConnect.MY_UUID.toString()
+                    + " exists on server.\n\n";
+
+            errorExit("Fatal Error", msg);
+        }
+    }
+
+    private void errorExit(String title, String message)
+    {
+        Toast.makeText(getBaseContext(), title + " - " + message,
+                Toast.LENGTH_LONG).show();
+        finish();
+    }
 }
