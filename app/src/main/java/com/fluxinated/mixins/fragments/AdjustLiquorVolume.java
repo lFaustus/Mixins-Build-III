@@ -30,13 +30,10 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -472,7 +469,9 @@ public class AdjustLiquorVolume extends MixLiquor
                                 mJSONObjectLiquor.put("Order", mJSONArrayLiquorOrder);
 
                                 //sets the date added into JSONObject
-                                String mDate = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(new Date());
+                                //if(mDate == null)
+                                  //  mDate = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(new Date());
+                               // String mDate = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(new Date());
                                 mJSONObjectLiquor.put(Liquor.JSONDB_LIQUOR_DATE_ADDED, mDate);
 
                                 if (triggeredView.getId() != R.id.mix_button_drinks)

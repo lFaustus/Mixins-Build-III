@@ -43,13 +43,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static android.animation.Animator.AnimatorListener;
 
 /**
  * Created by User on 08/10/2015.
  */
-public class LiquorList extends BaseLiquorFragment implements EndlessStaggeredRecyclerOnScrollListener.LoadCallback,EndlessStaggeredRecyclerOnScrollListener.ScrollCallback {
+public class LiquorList extends BaseLiquorFragment implements EndlessStaggeredRecyclerOnScrollListener.LoadCallback,EndlessStaggeredRecyclerOnScrollListener.ScrollCallback,StaggeredRecyclerAdapter.callbacks
+{
 
     private RecyclerView recyclerStaggeredView;
     private ArrayList<CardInformation> mCardInformation;
@@ -147,10 +149,11 @@ public class LiquorList extends BaseLiquorFragment implements EndlessStaggeredRe
             }
             //Log.e("cardinformaton size",mCardInformation.size()+"");
         if(mGenerateTiles == null)
-            mGenerateTiles = new GenerateTiles((MainActivity)getActivity(),mCardInformation);
+        {
+            mGenerateTiles = new GenerateTiles((MainActivity) getActivity(), mCardInformation);
             mGenerateTiles.setMaterialPalette(getActivity().getResources().getStringArray(R.array.material_palette));
             mGenerateTiles.fetch(null);
-
+        }
         this.mStaggeredRecyclerAdapter = new StaggeredRecyclerAdapter();
         this.recyclerStaggeredView.setAdapter(this.mStaggeredRecyclerAdapter);
         this.recyclerStaggeredView.setLayoutManager(this.mStaggeredGridLayoutManager);
@@ -227,6 +230,18 @@ public class LiquorList extends BaseLiquorFragment implements EndlessStaggeredRe
             Log.i("OnScrollStateChanged", newState + "");
 
         }
+    }
+
+    @Override
+    public void OnRemove(Object obj)
+    {
+
+    }
+
+    @Override
+    public void OnRetrieve(Objects obj)
+    {
+
     }
 
     class LoadMoreTask extends AsyncTask<Void,Void,Void>

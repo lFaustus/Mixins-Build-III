@@ -14,8 +14,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,11 +24,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fluxinated.mixins.database.MyApplication;
 import com.fluxinated.mixins.enums.FragmentTags;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -40,7 +40,7 @@ import java.util.UUID;
 /**
  * Created by proxmaccoy25 on 10/16/2015.
  */
-public class BluetoothConnect implements Parcelable {
+public class BluetoothConnect {
 
     public static final UUID MY_UUID = UUID
             .fromString("00001101-0000-1000-8000-00805F9B34FB");
@@ -66,9 +66,9 @@ public class BluetoothConnect implements Parcelable {
 
 
 
-    protected BluetoothConnect(Activity activity) {
-        mActivity = activity;
-        mBluetoothDevicesLayout = LayoutInflater.from(mActivity).inflate(R.layout.list_bluetoothdevices, null);
+    protected BluetoothConnect(WeakReference<Activity> activity) {
+        mActivity = activity.get();
+        mBluetoothDevicesLayout = LayoutInflater.from(MyApplication.getAppContext()).inflate(R.layout.list_bluetoothdevices, null);
         mListViewDetectedDevices = (ListView) mBluetoothDevicesLayout.findViewById(R.id.list_available_devices);
         mListViewPairedDevices = (ListView) mBluetoothDevicesLayout.findViewById(R.id.list_paired_devices);
         mBluetoothStatusView = (LinearLayout) mBluetoothDevicesLayout.findViewById(R.id.bluetooth_status_view);
@@ -95,7 +95,7 @@ public class BluetoothConnect implements Parcelable {
                     if (isBonded) {
                         //arrayListpaired.add(bdDevice.getName()+"\n"+bdDevice.getAddress());
                         //adapter.notifyDataSetChanged();
-                        Toast.makeText(mActivity, "Pairing Success", Toast.LENGTH_SHORT);
+                        Toast.makeText(MyApplication.getAppContext(), "Pairing Success", Toast.LENGTH_SHORT);
                         //getPairedDevices();
                         //mBluetoothPairedDevicesAdapter.notifyDataSetChanged();
                     }
@@ -118,7 +118,7 @@ public class BluetoothConnect implements Parcelable {
                     if (removeBonding) {
                         mBluetoothPairedDevicesListViewItems.remove(position);
                         mBluetoothPairedDevicesAdapter.notifyDataSetChanged();
-                        Toast.makeText(mActivity, "Unpaired success", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MyApplication.getAppContext(), "Unpaired success", Toast.LENGTH_SHORT).show();
                     }
 
 
@@ -382,6 +382,11 @@ public class BluetoothConnect implements Parcelable {
         }
     }
 
+    public void unregisterReceiver()
+    {
+        mActivity.unregisterReceiver(myReceiver);
+    }
+
     public OutputStream getOutputStream()
     {
         return this.mOutputStream;
@@ -391,60 +396,6 @@ public class BluetoothConnect implements Parcelable {
     {
         return this.mInputStream;
     }
-
-
-    protected BluetoothConnect(Parcel in) {
-        mBluetoothAdapter = (BluetoothAdapter) in.readValue(ClassLoader.getSystemClassLoader());
-        mBluetoothSocket = (BluetoothSocket) in.readValue(ClassLoader.getSystemClassLoader());
-        mOutputStream = (OutputStream) in.readValue(ClassLoader.getSystemClassLoader());
-        mInputStream = (InputStream) in.readValue(ClassLoader.getSystemClassLoader());
-        mListViewDetectedDevices = (ListView) in.readValue(ClassLoader.getSystemClassLoader());
-        mListViewPairedDevices = (ListView) in.readValue(ClassLoader.getSystemClassLoader());
-        mListViewItemClickedOnDetectedDevices = (AdapterView.OnItemClickListener) in.readValue(ClassLoader.getSystemClassLoader());
-        mListViewItemClickedOnPairedDevices = (AdapterView.OnItemClickListener) in.readValue(ClassLoader.getSystemClassLoader());
-        in.readList(mBluetoothDetectedDevicesListViewItems, ClassLoader.getSystemClassLoader());
-        in.readList(mBluetoothPairedDevicesListViewItems, ClassLoader.getSystemClassLoader());
-        mBluetoothDetectedDevicesAdapter = (ArrayAdapter<String>) in.readValue(ClassLoader.getSystemClassLoader());
-        mBluetoothPairedDevicesAdapter = (ArrayAdapter<String>) in.readValue(ClassLoader.getSystemClassLoader());
-        in.readTypedList(mBluetoothDetectedDevices, BluetoothDevice.CREATOR);
-        in.readTypedList(mBluetoothPairedDevices, BluetoothDevice.CREATOR);
-    }
-
-    public static final Creator<BluetoothConnect> CREATOR = new Creator<BluetoothConnect>() {
-        @Override
-        public BluetoothConnect createFromParcel(Parcel in) {
-            return new BluetoothConnect(in);
-        }
-
-        @Override
-        public BluetoothConnect[] newArray(int size) {
-            return new BluetoothConnect[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeValue(mBluetoothAdapter);
-        dest.writeValue(mBluetoothSocket);
-        dest.writeValue(mOutputStream);
-        dest.writeValue(mInputStream);
-        dest.writeValue(mListViewDetectedDevices);
-        dest.writeValue(mListViewPairedDevices);
-        dest.writeValue(mListViewItemClickedOnDetectedDevices);
-        dest.writeValue(mListViewItemClickedOnPairedDevices);
-        dest.writeList(mBluetoothDetectedDevicesListViewItems);
-        dest.writeList(mBluetoothPairedDevicesListViewItems);
-        dest.writeValue(mBluetoothDetectedDevicesAdapter);
-        dest.writeValue(mBluetoothPairedDevicesAdapter);
-        dest.writeTypedList(mBluetoothDetectedDevices);
-        dest.writeTypedList(mBluetoothPairedDevices);
-    }
-
 
     class connectTask extends AsyncTask<Void,Void,Boolean>
     {

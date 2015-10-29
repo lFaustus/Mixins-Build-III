@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.fluxinated.mixins.R;
 import com.fluxinated.mixins.model.CardInformation;
@@ -64,8 +63,9 @@ public class DB
         return isSuccess;
     }
 
-    public void  delete(Object... params)
+    public boolean  delete(Object... params)
     {
+        boolean isSuccess = false;
         SQLiteDatabase db = mDbHelper.openToWriteDB();
         try
         {
@@ -73,17 +73,17 @@ public class DB
                 //db.delete(DBhelper.mTableName,DBhelper.mTableColumns[1]+" like '%" + params[0].toString() + "%'; ",null);
             db.delete(DBhelper.mTableName,DBhelper.mTableColumns[0] +" =" +params[0].toString() +";" ,null);
            // db.delete(DBhelper.mTableName,DBhelper.mTableColumns[0] ,new String[]{params[0].toString()});
-
+             isSuccess = true;
+            return isSuccess;
         }
         catch (Exception exp)
         {
-            Toast.makeText(MyApplication.getAppContext(),"Failed to delete liquor", Toast.LENGTH_SHORT).show();
             exp.printStackTrace();
         }finally
         {
             mDbHelper.closeDB();
         }
-
+        return isSuccess;
     }
 
     public void select(int offset, ArrayList<CardInformation> cardInformations,String args)

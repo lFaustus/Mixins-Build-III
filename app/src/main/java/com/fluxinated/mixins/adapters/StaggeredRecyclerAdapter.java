@@ -6,8 +6,10 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
+import com.fluxinated.mixins.MainActivity;
 import com.fluxinated.mixins.R;
 import com.fluxinated.mixins.database.GenerateTiles;
 import com.fluxinated.mixins.loader.ImageLoaderEX;
@@ -17,7 +19,10 @@ import com.fluxinated.mixins.viewholders.BaseViewHolder;
 
 import org.json.JSONException;
 
+import java.lang.ref.WeakReference;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -30,7 +35,9 @@ public class StaggeredRecyclerAdapter extends RecyclerView.Adapter<BaseViewHolde
     private ArrayList<CardInformation> mCardInformation;
     private ImageLoaderEX mImageLoader;
     private DisplayMetrics windowMetrics;
-    private static GenerateTiles mGenerateTiles;
+    private long mDateDifference;
+    private static int RibbonDuration = 4;
+
 
     public StaggeredRecyclerAdapter()
     {
@@ -47,10 +54,10 @@ public class StaggeredRecyclerAdapter extends RecyclerView.Adapter<BaseViewHolde
     @Override
     public void onBindViewHolder(BaseViewHolder holder, int position)
     {
-        Liquor mLiquor =  (Liquor) mCardInformation.get(position).getLiquor();
+        WeakReference<Liquor> mLiquor = new WeakReference<>(mCardInformation.get(position).getLiquor());
         try
         {
-            mImageLoader.DisplayImage(mLiquor.getLiquorPictureURI(),mLiquor.getLiquorName(),holder.img);
+            mImageLoader.DisplayImage(mLiquor.get().getLiquorPictureURI(),mLiquor.get().getLiquorName(),holder.img);
         } catch (JSONException e)
         {
             e.printStackTrace();
@@ -86,15 +93,43 @@ public class StaggeredRecyclerAdapter extends RecyclerView.Adapter<BaseViewHolde
 
         try
         {
-            holder.txtview.setText(mLiquor.getLiquorName());
+            holder.txtview.setText(mLiquor.get().getLiquorName());
         }
         catch (JSONException e)
         {
             e.printStackTrace();
         }
         holder.Tile_label.setBackgroundColor(Color.parseColor(mCardInformation.get(position).getTileColor()));
+
         mCardInformation.get(position).setCardPosition(position);
         holder.Tile.setTag(mCardInformation.get(position));
+
+        try
+        {
+            Date mCurrentDate = MainActivity.getDateFormat().parse(MainActivity.getStringDate());
+            Date mLiquorDateAdded = MainActivity.getDateFormat().parse(mLiquor.get().getDateAdded());
+            mDateDifference = ((mCurrentDate.getTime() - mLiquorDateAdded.getTime()) / (1000 * 60 * 60 * 24));
+            //Log.e("date diff","mCurrentDate " + mCurrentDate.get().getTime() +" - mLiquorDate "+mLiquorDateAdded.get().getTime() );
+        } catch (ParseException e)
+        {
+            e.printStackTrace();
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
+        if(mDateDifference > RibbonDuration)
+            holder.txtviewModeIndicator.setVisibility(View.GONE);
+        else
+            holder.txtviewModeIndicator.setVisibility(View.VISIBLE);
+
+
+    }
+
+    @Override
+    public void onViewRecycled(BaseViewHolder holder)
+    {
+        super.onViewRecycled(holder);
     }
 
     @Override
@@ -118,30 +153,7 @@ public class StaggeredRecyclerAdapter extends RecyclerView.Adapter<BaseViewHolde
         this.mImageLoader = mImageLoader;
     }
 
-   /* class StaggeredViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
-    {
 
-        ImageView img;
-        TextView txtview,txtviewModeIndicator;
-        CardView Tile;
-        FrameLayout Tile_label;
-
-        public StaggeredViewHolder(View itemView)
-        {
-            super(itemView);
-            img = (ImageView) itemView.findViewById(R.id.imageLiquor);
-            txtview = (TextView) itemView.findViewById(R.id.textLiquor);
-            Tile = (CardView) itemView.findViewById(R.id.card_view);
-            Tile_label = (FrameLayout) itemView.findViewById(R.id.tile_label);
-            txtviewModeIndicator = (TextView)itemView.findViewById(R.id.edit_mode_tag);
-        }
-
-        @Override
-        public void onClick(View v)
-        {
-
-        }
-    }*/
    public callbacks getCallback()
    {
         return mCaller;

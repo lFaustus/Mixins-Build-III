@@ -28,15 +28,16 @@
         android:layout_marginTop="-10dp"
         android:rotation="-45">
 
-        <TextView
+        <com.fluxinated.mixins.customviews.PlayFontTextView
             android:id="@+id/edit_mode_tag"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@color/green_material_semi_transparent"
+            android:background="@color/red_material_semi_transparent"
             android:gravity="center"
-            android:text="Edit Mode"
-            android:visibility="invisible"
+            android:text="Hot"
+            android:textColor="@color/white"
+
             android:textSize="13sp"/>
 
     </FrameLayout>

@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.fluxinated.mixins.adapters.StaggeredRecyclerAdapter;
 import com.fluxinated.mixins.database.DB;
+import com.fluxinated.mixins.database.MyApplication;
 import com.fluxinated.mixins.enums.Bottle;
 import com.fluxinated.mixins.enums.FragmentTags;
 import com.fluxinated.mixins.fragments.AdjustLiquorVolume;
@@ -26,9 +27,13 @@ import com.fluxinated.mixins.model.CardInformation;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -41,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
     private ImageLoaderEX mImageLoaderEX;
     private BluetoothConnect mBluetoothConnect;
     private Handler mHandler;
+    private static SimpleDateFormat mDate;
 
 
 
@@ -58,19 +64,20 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
         mBottles = Bottle.values();
         checkCurrentBottle();
         mDB = new DB();
-        mImageLoaderEX = new ImageLoaderEX(this);
+        mImageLoaderEX = new ImageLoaderEX(new WeakReference<Context>(this));
+        mDate = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         if (savedInstanceState == null)
         {
-           /* getSupportFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction()
                     .add(R.id.root_view, LiquorList.getInstance(FragmentTags.LiquorList.getTAG()))
-                    .commit();*/
-            mBluetoothConnect = new BluetoothConnect(this);
+                    .commit();
+           // mBluetoothConnect = new BluetoothConnect(this);
 
            // mBluetoothConnect.execute();
         }
-        else
-            mBluetoothConnect = (BluetoothConnect) getLastCustomNonConfigurationInstance();
+        //else
+            //mBluetoothConnect = (BluetoothConnect) getLastCustomNonConfigurationInstance();
     }
 
 
@@ -134,9 +141,9 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
         return mDB.insert(obj);
     }
 
-    public void DeleteLiquor(Object obj)
+    public boolean DeleteLiquor(Object obj)
     {
-        mDB.delete(obj);
+        return mDB.delete(obj);
     }
 
     public void RetrieveLiquor(int offset, ArrayList<CardInformation> mCardInformation,String args)
@@ -148,6 +155,16 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
     {
         mImageLoaderEX.DisplayImage(ImageURI,name,img);
     }*/
+
+    public static String getStringDate()
+    {
+        return mDate.format(new Date());
+    }
+
+    public static SimpleDateFormat getDateFormat()
+    {
+        return mDate;
+    }
 
     public ImageLoaderEX getImageLoader()
     {
@@ -219,12 +236,26 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
         return mBluetoothConnect;
     }
 
+
+    @Override
+    protected void onStop()
+    {
+       // mBluetoothConnect.unregisterReceiver();
+        super.onStop();
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+    }
+
     @Override
     public void onBackPressed()
     {
 
         if(getSupportFragmentManager().getBackStackEntryCount()==0) {
-            mBluetoothConnect.offBluetooth();
+           // mBluetoothConnect.offBluetooth();
         }
         super.onBackPressed();
 
@@ -286,7 +317,7 @@ public class MainActivity extends AppCompatActivity implements StaggeredRecycler
 
     private void errorExit(String title, String message)
     {
-        Toast.makeText(getBaseContext(), title + " - " + message,
+        Toast.makeText(MyApplication.getAppContext(), title + " - " + message,
                 Toast.LENGTH_LONG).show();
         finish();
     }

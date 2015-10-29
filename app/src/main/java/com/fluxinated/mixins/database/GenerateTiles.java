@@ -47,6 +47,8 @@ public class GenerateTiles
     {
         mDBOffset = cardInformations.size();
         Log.i("OFFSET SIZE", mDBOffset + "");
+        if(args != null)
+            mDBOffset = 0;
         ((MainActivity)mActivity).RetrieveLiquor(mDBOffset, this.cardInformations,args);
         RandomTileSize(this.cardInformations);
 

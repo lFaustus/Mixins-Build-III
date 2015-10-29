@@ -30,6 +30,7 @@ public abstract class BaseLiquorFragment extends BaseFragment
     protected Map<String, String> mOrder = Collections.synchronizedMap(new LinkedHashMap<>());
     protected Map<Bottle,String> mCurrentBottleSettings;
     protected Bottle[] mBottle;
+    protected static String mDate;
 
 
     public BaseLiquorFragment() {
@@ -55,6 +56,7 @@ public abstract class BaseLiquorFragment extends BaseFragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mDate = ((MainActivity)getActivity()).getStringDate();
         mBottle = ((MainActivity)getActivity()).getBottles();
         mCurrentBottleSettings = ((MainActivity)getActivity()).getCurrentBottleSettings();
         initializeViews((ViewGroup) getView().getRootView());

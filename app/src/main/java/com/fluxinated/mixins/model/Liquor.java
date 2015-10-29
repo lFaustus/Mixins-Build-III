@@ -101,6 +101,8 @@ public class Liquor implements Parcelable
         return Ingredients;
     }*/
 
+
+
     public String getLiquorPictureURI() throws JSONException
     {
        return this.JSONLiquor.getString(JSONDB_LIQUOR_PIC_URL);

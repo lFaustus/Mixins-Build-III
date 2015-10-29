@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.ref.WeakReference;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,7 +43,6 @@ public class ImageLoaderEX
     private Map<ImageView,String> mImageViews;
     private ExecutorService mExecutorService;
     private Handler mHandler;
-    private Context mContext;
     private BaseImageDownloader mBaseImageDownloader;
 
     {
@@ -52,12 +52,11 @@ public class ImageLoaderEX
         this.mHandler = new Handler();
     }
 
-    public ImageLoaderEX(Context context)
+    public ImageLoaderEX(WeakReference<Context> context)
     {
         this.mHandler = new Handler();
-        this.mFileCache = new FileCache(context);
-        this.mBaseImageDownloader = new BaseImageDownloader(context);
-        this.mContext = context;
+        this.mFileCache = new FileCache(context.get());
+        this.mBaseImageDownloader = new BaseImageDownloader(context.get());
 
     }
 

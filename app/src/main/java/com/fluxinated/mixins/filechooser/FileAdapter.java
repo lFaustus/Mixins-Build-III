@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.fluxinated.mixins.R;
 import com.fluxinated.mixins.loader.ImageLoaderEX;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 
@@ -32,7 +33,7 @@ public class FileAdapter extends ArrayAdapter<Items>
 		FileAdapter.context = context;
 		mItems = objects;
 		layoutid = resource;
-		mImageLoader = new ImageLoaderEX(context);
+		mImageLoader = new ImageLoaderEX(new WeakReference<Context>(context));
 	}
 	
 	public void scrollState(int state)
